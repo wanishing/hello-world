@@ -6,10 +6,6 @@
 
 (enable-console-print!)
 
-(println "This text is printed from src/hello-world/core.cljs. Go ahead and edit it and see reloading in action.")
-
-;; define your app data so that it doesn't get over-written on reload
-
 (def css-path (str "/Users/talwanich/clojurescript/hello-world/resources/public/css/style.css"))
 
 (def styles
@@ -82,25 +78,15 @@
     (let [current (nth slides (get @app-state :current))]
        [current])))
 
-(defn bounded-inc [i]
-  (mod (inc i) (count slides)))
-
-(defn bounded-dec [i]
-  (mod (dec i) (count slides)))
-
 (defn prev-button []
   (fn []
     [:a {:class "prev"
-         :onClick #(do
-                     (println @app-state)
-                     (swap! app-state update-in [:current] bounded-dec))}  "<"]))
+         :onClick (swap! app-state update-in [:current] #(mod (dec %) (count slides)))}  "<"]))
 
 (defn next-button []
   (fn []
     [:a {:class "next"
-         :onClick #(do
-                     (println @app-state)
-                    (swap! app-state update-in [:current] bounded-inc))} ">"]))
+         :onClick (swap! app-state update-in [:current] #(mod (inc %) (count slides)))} ">"]))
 
 (defn main-container []
   [:div {:class "slideshow-container"}
@@ -125,4 +111,4 @@
   ;; optionally touch your app-state to force rerendering depending on
   ;; your application
   ;; (swap! app-state update-in [:__figwheel_counter] inc)
-)
+  )
