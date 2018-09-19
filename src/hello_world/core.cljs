@@ -12,7 +12,7 @@
 
                                         ;
 
-(defonce app-state (atom {:current 0}))
+
 
 (def css-path (str "/Users/talwanich/clojurescript/hello-world/resources/public/css/style.css"))
 
@@ -66,6 +66,8 @@
                   quote
                   author])))
 
+(defonce app-state (atom {:current 0}))
+
 (defn slide1 []
   [:div {:class "slide"}
    [:q "I love you the more in that I believe you had liked me for my own sake and for nothing else"]
@@ -81,31 +83,37 @@
 
 (defn slide []
   (fn []
-    (let [current (nth slides (get @app-state :current))
-          ]
-      (do
-       (println (str "app state " @app-state))
-       (println (str "current is " (get @app-state :current)))
-       current)
-      )))
+    (let [current (nth slides (get @app-state :current))]
+       [current])))
+
 
 (defn bounded-inc [i]
+  (println "inc")
+  (println @app-state)
   (if (= i (dec (count slides)))
     i
     (inc i)))
 
 (defn bounded-dec [i]
+  (println "dec")
+  (println @app-state)
   (if (zero? i)
     i
     (dec i)))
 
 (defn prev-button []
-  [:a {:class "prev"
-       :onClick #(swap! app-state update-in [:current] bounded-dec)}  "<"])
+  (fn []
+    [:a {:class "prev"
+         :onClick #(do
+                     (println @app-state)
+                     (swap! app-state update-in [:current] bounded-dec))}  "<"]))
 
 (defn next-button []
-  [:a {:class "next"
-       :onClick #(swap! app-state update-in [:current] bounded-inc)} ">"])
+  (fn []
+    [:a {:class "next"
+         :onClick #(do
+                     (println @app-state)
+                     (swap! app-state update-in [:current] bounded-inc))} ">"]))
 
 (defn main-container []
   [:div {:class "slideshow-container"}
@@ -125,6 +133,18 @@
 
 (reagent/render-component [main-container]
                           (. js/document (getElementById "app")))
+
+
+
+
+
+
+
+
+
+
+
+
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
