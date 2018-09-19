@@ -10,10 +10,6 @@
 
 ;; define your app data so that it doesn't get over-written on reload
 
-                                        ;
-
-
-
 (def css-path (str "/Users/talwanich/clojurescript/hello-world/resources/public/css/style.css"))
 
 (def styles
@@ -86,20 +82,11 @@
     (let [current (nth slides (get @app-state :current))]
        [current])))
 
-
 (defn bounded-inc [i]
-  (println "inc")
-  (println @app-state)
-  (if (= i (dec (count slides)))
-    i
-    (inc i)))
+  (mod (inc i) (count slides)))
 
 (defn bounded-dec [i]
-  (println "dec")
-  (println @app-state)
-  (if (zero? i)
-    i
-    (dec i)))
+  (mod (dec i) (count slides)))
 
 (defn prev-button []
   (fn []
@@ -113,7 +100,7 @@
     [:a {:class "next"
          :onClick #(do
                      (println @app-state)
-                     (swap! app-state update-in [:current] bounded-inc))} ">"]))
+                    (swap! app-state update-in [:current] bounded-inc))} ">"]))
 
 (defn main-container []
   [:div {:class "slideshow-container"}
@@ -133,18 +120,6 @@
 
 (reagent/render-component [main-container]
                           (. js/document (getElementById "app")))
-
-
-
-
-
-
-
-
-
-
-
-
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
