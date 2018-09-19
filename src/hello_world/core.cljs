@@ -78,15 +78,24 @@
     (let [current (nth slides (get @app-state :current))]
        [current])))
 
+
+(defn cyclic-inc [i]
+  (mod (inc i) (count slides)))
+
+(defn cyclic-dec [i]
+  (mod (dec i) (count slides)))
+
 (defn prev-button []
   (fn []
     [:a {:class "prev"
-         :onClick (swap! app-state update-in [:current] #(mod (dec %) (count slides)))}  "<"]))
+         :onClick #(swap! app-state update-in [:current] cyclic-dec)}
+     "<"]))
 
 (defn next-button []
   (fn []
     [:a {:class "next"
-         :onClick (swap! app-state update-in [:current] #(mod (inc %) (count slides)))} ">"]))
+         :onClick #(swap! app-state update-in [:current] cyclic-inc)}
+     ">"]))
 
 (defn main-container []
   [:div {:class "slideshow-container"}
