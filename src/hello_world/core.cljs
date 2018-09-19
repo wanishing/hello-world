@@ -11,8 +11,8 @@
 ;; define your app data so that it doesn't get over-written on reload
 
                                         ;
-;(defonce app-state (atom 0))
-(def app-state (atom {:current 0}))
+
+(defonce app-state (atom {:current 0}))
 
 (def css-path (str "/Users/talwanich/clojurescript/hello-world/resources/public/css/style.css"))
 
@@ -81,8 +81,12 @@
 
 (defn slide []
   (fn []
-    (let [current (nth slides (get @app-state :current))]
-      [current]
+    (let [current (nth slides (get @app-state :current))
+          ]
+      (do
+       (println (str "app state " @app-state))
+       (println (str "current is " (get @app-state :current)))
+       current)
       )))
 
 (defn bounded-inc [i]
@@ -95,49 +99,29 @@
     i
     (dec i)))
 
-(defn slideshow-container []
-  [:div {:class "slideshow-container"}
-   [slide]
-   ;[:h "Where am I"]
-   [:a {:class "prev" :onClick #(swap! app-state update-in [:current] bounded-dec)}  "<"]
-   [:a {:class "next" :onClick #(swap! app-state update-in [:current] bounded-inc)} ">"]
-   ])
+(defn prev-button []
+  [:a {:class "prev"
+       :onClick #(swap! app-state update-in [:current] bounded-dec)}  "<"])
 
-(defn dot-container []
-  [:div {:class "dot-container"}
-   (for[ind (range 1 (count slides))]
-     [:span {:class "dot"
-             :onClick #(reset! app-state ind)}])])
-
+(defn next-button []
+  [:a {:class "next"
+       :onClick #(swap! app-state update-in [:current] bounded-inc)} ">"])
 
 (defn main-container []
   [:div {:class "slideshow-container"}
    [slide]
-   ;[:h "Where am I"]
-   [:a {:class "prev"
-        :onClick #(swap! app-state update-in [:current] bounded-dec)}  "<"]
-   [:a {:class "next"
-        :onClick #(swap! app-state update-in [:current] bounded-inc)} ">"]]
+   [prev-button]
+   [next-button]
   [:div {:class "dot-container"}
    (for [i (range (count slides))]
      [:span {:class "dot"
-             :onClick #(reset! app-state i)}])])
-
-
+             :key (str i)
+             :onClick #(swap! app-state assoc :current i)}])]])
 
 (defn markdown [text]
   (->> text
        (m/md->hiccup)
        (m/component)))
-
-
-(defn frame []
-  (fn []
-    (let [slide (nth slides (get @app-state :current))]
-      [slide]
-      [:button {:onClick #(swap! app-state update-in [:current] bounded-dec)} "prev"]
-      [:button {:onClick #(swap! app-state update-in [:current] bounded-inc)} "next"]
-      )))
 
 (reagent/render-component [main-container]
                           (. js/document (getElementById "app")))
