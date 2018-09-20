@@ -10,7 +10,8 @@
                  [org.clojure/core.async  "0.4.474"]
                  [reagent "0.7.0"]
                  [markdown-to-hiccup "0.3.0"]
-                 [garden "1.3.6"]]
+                 [garden "1.3.6"]
+                 [org.clojure/core.async "0.4.474"]]
 
   :plugins [[lein-figwheel "0.5.16"]
             [lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]]

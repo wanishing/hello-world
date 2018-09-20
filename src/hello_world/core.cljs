@@ -2,13 +2,16 @@
   (:require [reagent.core :as reagent :refer [atom]]
             [markdown-to-hiccup.core :as m]
             [garden.core :refer [css]]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [goog.events :as events]
+            [cljs.core.async :refer [chan dropping-buffer put! <! go]])
+  (:require-macros [cljs.core.async.macros :refer [go-loop]])
+  (:import  [goog.events.EventType]))
 
 (enable-console-print!)
 
+
 (def css-path (str "/Users/talwanich/clojurescript/hello-world/resources/public/css/style.css"))
-
-
 
 (def styles
   (let [slideshow-container (css [:.slideshow-container {
@@ -61,14 +64,13 @@
 
 (defonce app-state (atom {:current 0}))
 
+
 (defn markdown [text]
   (let [add-style #(conj [:div {:class "slide"}] (nth % 2))]
     (->> text
          (m/md->hiccup)
          (m/component)
          (add-style))))
-
-(println (markdown "tst"))
 
 
 (defn slide3 []
@@ -99,16 +101,25 @@
 (defn cyclic-dec [i]
   (mod (dec i) (count slides)))
 
+(defn prev-slide []
+  (println "prev-slide")
+  (swap! app-state update-in [:current] cyclic-dec))
+
+(defn next-slide []
+  (println "next-slide")
+  (swap! app-state update-in [:current] cyclic-inc))
+
+
 (defn prev-button []
   (fn []
     [:a {:class "prev"
-         :onClick #(swap! app-state update-in [:current] cyclic-dec)}
+         :onClick prev-slide}
      "<"]))
 
 (defn next-button []
   (fn []
     [:a {:class "next"
-         :onClick #(swap! app-state update-in [:current] cyclic-inc)}
+         :onClick next-slide}
      ">"]))
 
 (defn main-container []
@@ -122,9 +133,30 @@
              :key (str i)
              :onClick #(swap! app-state assoc :current i)}])]])
 
-
 (reagent/render-component [main-container]
                           (. js/document (getElementById "app")))
+
+(def keyboard-events
+    (.-KEYDOWN events/EventType))
+
+(def event-source
+  (.-body js/document))
+
+(defn listen-to-keyboard []
+  (let [event-ch (chan (dropping-buffer 1))]
+    (events/listen event-source
+                   keyboard-events
+                   #(put! event-ch #(.-keyCode %)))
+    event-ch))
+
+(let [input (listen-to-keyboard)]
+  (go-loop []
+    (let [key (<! input)
+          right 39
+          left 37]
+      (cond (= key right) (next-slide)
+            (= key left) (prev-slide)))
+    (recur)))
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
