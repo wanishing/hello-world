@@ -4,12 +4,9 @@
   position: relative;
   background: #f1f1f1f1;
 }
-
 /* Slides */
 .slide {
-  /*display: none;*/
   padding: 80px;
-  text-align: center;
 }
 
 /* Next & previous buttons */

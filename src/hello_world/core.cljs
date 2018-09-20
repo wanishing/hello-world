@@ -8,12 +8,13 @@
 
 (def css-path (str "/Users/talwanich/clojurescript/hello-world/resources/public/css/style.css"))
 
+
+
 (def styles
   (let [slideshow-container (css [:.slideshow-container {
                                                        :postition "relative"
                                                        :background "#f1f1f1f1"}])
-        slide (css [:.slide {:display "none"
-                             :padding "80px"
+        slide (css [:.slide { :padding "80px"
                              :text-align "center"}])
         next-prev (css [:.prev :.next {:cursor "pointer"
                                        :position "absolute"
@@ -46,8 +47,7 @@
         active-dot (css [:.active :.dot:hover {:background-color "#717171"}])
         quote (css [:.q {:font-style "italic"}])
         author (css [:.author {:color "cornflowerblue"}])]
-    (string/join "/n"
-                 [slideshow-container
+    (string/join [slideshow-container
                   slide
                   next-prev
                   next-position
@@ -58,7 +58,21 @@
                   quote
                   author])))
 
+
 (defonce app-state (atom {:current 0}))
+
+(defn markdown [text]
+  (let [add-style #(conj [:div {:class "slide"}] (nth % 2))]
+    (->> text
+         (m/md->hiccup)
+         (m/component)
+         (add-style))))
+
+(println (markdown "tst"))
+
+
+(defn slide3 []
+  (markdown "Old **markdown** test"))
 
 (defn slide1 []
   [:div {:class "slide"}
@@ -71,7 +85,7 @@
     :q "But man is not made for defeat. A man can be destroyed but not defeated."]
    [:p {:class "author"} "Ernest Hemingway"]])
 
-(def slides [slide1, slide2])
+(def slides [slide1, slide2, slide3])
 
 (defn slide []
   (fn []
@@ -108,10 +122,6 @@
              :key (str i)
              :onClick #(swap! app-state assoc :current i)}])]])
 
-(defn markdown [text]
-  (->> text
-       (m/md->hiccup)
-       (m/component)))
 
 (reagent/render-component [main-container]
                           (. js/document (getElementById "app")))
