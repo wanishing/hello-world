@@ -94,44 +94,41 @@
     (let [current (nth slides (get @app-state :current))]
        [current])))
 
-
-(defn cyclic-inc [i]
-  (mod (inc i) (count slides)))
-
-(defn cyclic-dec [i]
-  (mod (dec i) (count slides)))
-
-(defn prev-slide []
+(defn prev-slide![]
   (println "prev-slide")
-  (swap! app-state update-in [:current] cyclic-dec))
+  (let [cyclic-dec #(mod (dec %) (count slides))]
+    (swap! app-state update-in [:current] cyclic-dec)))
 
-(defn next-slide []
-  (println "next-slide")
-  (swap! app-state update-in [:current] cyclic-inc))
+(defn next-slide! []
+  (println "next-slide!")
+  (let [cyclic-inc #(mod (inc %) (count slides))]
+    (swap! app-state update-in [:current] cyclic-inc)))
 
+(defn set-slide! [i]
+  (swap! app-state assoc :current i))
 
 (defn prev-button []
   (fn []
     [:a {:class "prev"
-         :onClick prev-slide}
+         :onClick prev-slide!}
      "<"]))
 
 (defn next-button []
   (fn []
     [:a {:class "next"
-         :onClick next-slide}
+         :onClick next-slide!}
      ">"]))
 
 (defn main-container []
   [:div {:class "slideshow-container"}
    [slide]
-   [prev-button]
-   [next-button]
+;   [prev-button]
+ ;  [next-button]
   [:div {:class "dot-container"}
    (for [i (range (count slides))]
      [:span {:class "dot"
              :key (str i)
-             :onClick #(swap! app-state assoc :current i)}])]])
+             :onClick #(set-slide! i)}])]])
 
 (reagent/render-component [main-container]
                           (. js/document (getElementById "app")))
@@ -142,11 +139,14 @@
 (def event-source
   (.-body js/document))
 
+(defn extract-key [evt]
+  (.-keyCode evt))
+
 (defn listen-to-keyboard []
   (let [event-ch (chan (dropping-buffer 1))]
     (events/listen event-source
                    keyboard-events
-                   #(put! event-ch #(.-keyCode %)))
+                   #(put! event-ch (extract-key %)))
     event-ch))
 
 (let [input (listen-to-keyboard)]
@@ -154,8 +154,8 @@
     (let [key (<! input)
           right 39
           left 37]
-      (cond (= key right) (next-slide)
-            (= key left) (prev-slide)))
+      (cond (= key right) (next-slide!)
+            (= key left) (prev-slide!)))
     (recur)))
 
 (defn on-js-reload []
