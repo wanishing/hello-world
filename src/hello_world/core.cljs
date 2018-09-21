@@ -64,40 +64,56 @@
 
 (defonce app-state (atom {:current 0}))
 
-
 (defn markdown [text]
-  (let [add-style #(conj [:div {:class "slide"}] (nth % 2))]
-    (->> text
-         (m/md->hiccup)
-         (m/component)
-         (add-style))))
+  (->> text
+       (m/md->hiccup)
+       (m/component)))
 
-(println (->> "#test"
-              (m/md->hiccup)
-              (m/component)
-              ))
+(defn with-style [dom style]
+  (conj [:div {:class (str style)} (nth dom 2)]))
+
+(defn make-slide [title body]
+  (let [container [:div {:class "slide-container"}]
+        dom-title (with-style (markdown title) "title")
+        dom-body (with-style (markdown body) "slide")]
+    (conj container
+          dom-title
+          dom-body)))
+
+
 
 (defn slide3 []
-  (conj (markdown "#Title")
-        (markdown "* Title * Old **markdown** test
-* more bulltet")))
-
-
-(prn (conj (markdown "#Title") (markdown "text")))
+  (let [title "#Clojure Presentation"
+        text "* Body **text** is awsome
+* more bulltet
+"]
+    (make-slide title text)))
 
 
 (defn slide1 []
-  [:div {:class "slide"}
-   [:q "I love you the more in that I believe you had liked me for my own sake and for nothing else"]
-   [:p {:class "author"} "John Keats"]])
+  (let [title "#Intro to Clojure"
+        text "* Body **text** is awsome
+* more bulltet
+"]
+    (make-slide title text)))
 
 (defn slide2 []
-  [:div {:class "slide"}
-   [
-    :q "But man is not made for defeat. A man can be destroyed but not defeated."]
-   [:p {:class "author"} "Ernest Hemingway"]])
+  (let [title "#Slide 2"
+        text "* Body **text** is awsome
+* more bulltet
+"]
+    (make-slide title text)))
 
-(def slides [slide1, slide2, slide3])
+(defn slide4 []
+  (fn []
+    [:div {:style {:height "20px"
+                   :width "20px"
+                   :background-color "#bbb"
+                   :border-radius "50%"
+                   :display "inline-block"}}]))
+
+
+(def slides [slide1, slide2, slide3, slide4])
 
 (defn slide []
   (fn []
@@ -129,14 +145,15 @@
          :onClick next-slide!}
      ">"]))
 
+
 (defn main-container []
   [:div {:class "slideshow-container"}
    [slide]
   [:div {:class "dot-container"}
    (for [i (range (count slides))]
      [:span {:class "dot"
-             :key (str i)
-             :onClick #(set-slide! i)}])]])
+          :key (str i)
+          :onClick #(set-slide! i)}])]])
 
 (reagent/render-component [main-container]
                           (. js/document (getElementById "app")))

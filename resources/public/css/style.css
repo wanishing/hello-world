@@ -6,15 +6,32 @@
 }
 /* Slides */
 .slide {
-    padding: 180px;
+    padding: 80px;
     position: center;
     font-size: 20px;
-    margin-left: -100px;
-    margin-top: -30px;
+    margin-top: -200px;
     margin-right: 100px;
-    margin-bottom: 10px;
+    margin-bottom: 100px;
+
 }
 
+.title {
+    padding: 50px;
+    position: center;
+    font-size: 20px;
+    margin-left: 150px;
+    margin-top: -30px;
+    margin-right: 100px;
+    margin-bottom: 100px;
+
+}
+
+.slide-container {
+    padding: 50px;
+    position: center;
+    margin-left: 200px;
+
+}
 /* Next & previous buttons */
 .prev, .next {
   cursor: pointer;
@@ -69,6 +86,7 @@
 
 /* Add an italic font style to all quotes */
 q {font-style: italic;}
+
 
 /* Add a blue color to the author */
 .author {color: cornflowerblue;}
