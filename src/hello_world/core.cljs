@@ -72,9 +72,19 @@
          (m/component)
          (add-style))))
 
+(println (->> "#test"
+              (m/md->hiccup)
+              (m/component)
+              ))
 
 (defn slide3 []
-  (markdown "Old **markdown** test"))
+  (conj (markdown "#Title")
+        (markdown "* Title * Old **markdown** test
+* more bulltet")))
+
+
+(prn (conj (markdown "#Title") (markdown "text")))
+
 
 (defn slide1 []
   [:div {:class "slide"}
@@ -122,8 +132,6 @@
 (defn main-container []
   [:div {:class "slideshow-container"}
    [slide]
-;   [prev-button]
- ;  [next-button]
   [:div {:class "dot-container"}
    (for [i (range (count slides))]
      [:span {:class "dot"

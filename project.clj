@@ -30,7 +30,7 @@
                            ;; in the default browser once Figwheel has
                            ;; started and compiled your application.
                            ;; Comment this out once it no longer serves you.
-                           :open-urls ["http://localhost:3449/index.html"]}
+                           }
 
                 :compiler {:main hello-world.core
                            :asset-path "js/compiled/out"
