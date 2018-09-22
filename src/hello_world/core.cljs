@@ -63,6 +63,7 @@
 
 
 (defonce app-state (atom {:current 0}))
+(comment "macro,functional, presistent data structure immutabillity, concurrency, lisp, jvm, polymorphism")
 
 (defn markdown [text]
   (->> text
@@ -72,37 +73,70 @@
 (defn with-style [dom style]
   (conj [:div {:class (str style)} (nth dom 2)]))
 
-(defn make-slide [title body]
-  (let [container [:div {:class "slide-container"}]
+(defn empty-slide []
+  [:div {:class "slide-container"}])
+
+(defn simple-slide [title body]
+  (let [container (empty-slide)
         dom-title (with-style (markdown title) "title")
         dom-body (with-style (markdown body) "slide")]
     (conj container
           dom-title
           dom-body)))
 
+(defn bullets [args]
+  (loop [args args
+         acc ""]
+    (let [seperator (if (empty? acc) "* " "\n* ")]
+      (if (empty? args)
+        acc
+        (recur (rest args) (string/join seperator [acc (first args)]))))))
+
+(println (bullets ["first" (bullets ["nested" "bullet"])]))
 
 
-(defn slide3 []
+(defn intro []
+  (let [title "#clojure"
+        text (bullets ["modern Lisp dialect"
+                       "runs on the JVM"
+                       "immutable data structures"
+                       ])]
+    (simple-slide title text)))
+
+(defn markdown-code [code]
+  (let []
+    (->> code
+         (markdown))))
+
+(println (markdown "```clojure
+(defn fn []
+    (println \"hello world\"))```"))
+
+(defn syntax []
+  (let [container (empty-slide)
+        slide [:div
+               [:pre {} [:code {:class "language-clojure" :data-lang "clojure"}
+                         (str '(defn foo []
+                                 (println "Hello World")))
+                         ]
+                ]]]
+    (conj container
+          [:div {:class "title"} "Tile"]
+          slide)))
+
+(println syntax)
+(println [:pre {} [:code :class "language-clojure"]
+          `(defn foo []
+             (println "hello"))])
+
+
+(defn slide3
+
+ []
   (let [title "#Clojure Presentation"
-        text "* Body **text** is awsome
-* more bulltet
-"]
-    (make-slide title text)))
-
-
-(defn slide1 []
-  (let [title "#Intro to Clojure"
-        text "* Body **text** is awsome
-* more bulltet
-"]
-    (make-slide title text)))
-
-(defn slide2 []
-  (let [title "#Slide 2"
-        text "* Body **text** is awsome
-* more bulltet
-"]
-    (make-slide title text)))
+        text  (bullets ["Body **tesxt** is really awesome"
+                        "more bullet"])]
+    (simple-slide title text)))
 
 (defn slide4 []
   (fn []
@@ -113,7 +147,7 @@
                    :display "inline-block"}}]))
 
 
-(def slides [slide1, slide2, slide3, slide4])
+(def slides [intro, syntax, slide3, slide4])
 
 (defn slide []
   (fn []
