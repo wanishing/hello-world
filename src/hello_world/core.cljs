@@ -3,6 +3,8 @@
             [markdown-to-hiccup.core :as m]
             [garden.core :refer [css]]
             [clojure.string :as string]
+            [cljs.reader :refer [read-string]]
+            [cljs.js :refer [empty-state eval js-eval]]
             [goog.events :as events]
             [cljs.core.async :refer [chan dropping-buffer put! <! go]])
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
@@ -92,8 +94,6 @@
         acc
         (recur (rest args) (string/join seperator [acc (first args)]))))))
 
-(println (bullets ["first" (bullets ["nested" "bullet"])]))
-
 
 (defn intro []
   (let [title "#clojure"
@@ -108,31 +108,85 @@
     (->> code
          (markdown))))
 
-(println (markdown "```clojure
-(defn fn []
-    (println \"hello world\"))```"))
+(defn code-block [code]
+  [:pre {}
+   [:code {:class "language-clojure"
+           :data-lang "clojure"}
+    (prn-str code)]])
 
 (defn syntax []
   (let [container (empty-slide)
         slide [:div
-               [:pre {} [:code {:class "language-clojure" :data-lang "clojure"}
-                         (str '(defn foo []
-                                 (println "Hello World")))
-                         ]
-                ]]]
+               (code-block `(defn foo []
+                              (let [a (str "a")
+                                    b (str "b")]
+                                (println "B is " b)
+                                (println "A is " a))
+                              ))
+               ]]
     (conj container
           [:div {:class "title"} "Tile"]
           slide)))
 
-(println syntax)
-(println [:pre {} [:code :class "language-clojure"]
-          `(defn foo []
-             (println "hello"))])
+(comment (defn editor [content]
+           [:div.container-fluid
+            [:div.row
+             [:div.col-sm-6
+              [:textarea.form-control {:value @content
+                                       :style {:class "editor"}
+                                       :on-change #(reset! content (-> % .-target .-value))}]]]]))
 
 
-(defn slide3
+(comment (defn code-component [content]
+           (fn []
+             [:div {:dangerouslySetInnerHTML
+                    {:__html (display content)}}])))
 
- []
+(comment (defn preview [content]
+           (when (not-empty @content)
+             (code-component @content))))
+
+(defn eval-str [s]
+  (println "eval-str " s)
+  (eval (empty-state)
+        (read-string s)
+        {:eval       js-eval
+         :source-map true
+         :context    :expr}
+        identity))
+
+
+(defn code-component [input output]
+  (fn []
+    [:div (:style {:class "repl"})
+     [:p "code"]
+     [:textarea
+      {:value @input
+       :on-change #(reset! input (-> % .-target .-value))}]
+     [:div>button
+      {:on-click #(reset! output (eval-str @input))}
+      "eval!"]]))
+
+(defn output-component [output]
+  (fn []
+    [:div
+     (code-block (str (:value @output)))]))
+
+(defn repl []
+  (let [input (reagent/atom nil)
+        output (reagent/atom nil)
+        container (empty-slide)
+        code-ct (code-component input output)
+        output-ct (output-component output)]
+    (conj container
+          [code-ct]
+          [output-ct])))
+
+
+
+
+
+(defn slide3 []
   (let [title "#Clojure Presentation"
         text  (bullets ["Body **tesxt** is really awesome"
                         "more bullet"])]
@@ -147,7 +201,7 @@
                    :display "inline-block"}}]))
 
 
-(def slides [intro, syntax, slide3, slide4])
+(def slides [intro, syntax, repl, slide3, slide4])
 
 (defn slide []
   (fn []

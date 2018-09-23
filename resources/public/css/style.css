@@ -99,6 +99,36 @@ q {font-style: italic;}
 /* Add a blue color to the author */
 .author {color: cornflowerblue;}
 
+.editor {
+    padding: 80px;
+    position: center;
+    font-size: 27px;
+    margin-top: -200px;
+    margin-right: 100px;
+    margin-bottom: 100px;
+    margin-left: -200px;
+}
+
+.repl {
+    background: url("backgrounds/linedpaper.png") center center no-repeat; /* This ruins default border */
+    margin-top: 0px;
+    margin-right: 100px;
+    margin-bottom: 100px;
+    margin-left: -200px;
+    font-family: Courier, monospace;
+}
+
+
+textarea {
+    background: url("backgrounds/linedpaper.png") center center no-repeat; /* This ruins default border */
+    border: 0px solid #888;
+    padding-bottom: 200px;
+    padding-left: 10px;
+    padding-right: 200px;
+    padding-top: 10px;
+    font-size: 30px;
+}
+}
 /* PrismJS 1.15.0
 https://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript+clojure */
 /**
