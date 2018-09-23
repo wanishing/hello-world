@@ -30,7 +30,6 @@
     margin-top: -80px;
     margin-right: 100px;
     margin-bottom: 100px;
-
 }
 
 .slide-container {
@@ -111,24 +110,30 @@ q {font-style: italic;}
 
 .repl {
     background: url("backgrounds/linedpaper.png") center center no-repeat; /* This ruins default border */
-    margin-top: 0px;
+    margin-top: 100px;
     margin-right: 100px;
     margin-bottom: 100px;
-    margin-left: -200px;
-    font-family: Courier, monospace;
+    margin-left: 200px;
+
 }
+
 
 
 textarea {
     background: url("backgrounds/linedpaper.png") center center no-repeat; /* This ruins default border */
-    border: 0px solid #888;
-    padding-bottom: 200px;
+    border: 2px solid #888;
+    padding-bottom: 10px;
     padding-left: 10px;
-    padding-right: 200px;
+    padding-right: 10px;
     padding-top: 10px;
-    font-size: 30px;
+    font-size: 25px;
+    margin-top: -10px;
 }
-}
+
+
+
+
+
 /* PrismJS 1.15.0
 https://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript+clojure */
 /**

@@ -126,7 +126,8 @@
                ]]
     (conj container
           [:div {:class "title"} "Tile"]
-          slide)))
+          slide))
+                 )
 
 (comment (defn editor [content]
            [:div.container-fluid
@@ -158,19 +159,17 @@
 
 (defn code-component [input output]
   (fn []
-    [:div (:style {:class "repl"})
-     [:p "code"]
-     [:textarea
-      {:value @input
-       :on-change #(reset! input (-> % .-target .-value))}]
-     [:div>button
-      {:on-click #(reset! output (eval-str @input))}
-      "eval!"]]))
+    [:textarea
+     {:value @input
+      :on-change #(reset! input (-> % .-target .-value))}]
+    ))
 
 (defn output-component [output]
   (fn []
-    [:div
-     (code-block (str (:value @output)))]))
+    (code-block (str (:value @output)))))
+
+
+(println (intro))
 
 (defn repl []
   (let [input (reagent/atom nil)
@@ -178,13 +177,27 @@
         container (empty-slide)
         code-ct (code-component input output)
         output-ct (output-component output)]
-    (conj container
-          [code-ct]
-          [output-ct])))
+    [:div {:class "slide-container"}
+     [:div  {:class "title"} "repl"]
+     [:div {:class "slide"}
+      [:table
+       [:tbody
+        [:tr
+         [:td [code-ct]] [:td [output-ct]]]]]]
+     ]
+    ))
+(println (repl))
 
-
-
-
+(comment [:div.container-fluid {:style {:class "slide"}}
+          [:div.row
+           [:div.col-sm-6
+            [code-ct]]
+           [:div.col-sm-6
+            [:h3 "Preview"]
+            [output-ct]]]])
+(comment [:div>button
+          {:on-click #(reset! output (eval-str @input))}
+          "eval!"])
 
 (defn slide3 []
   (let [title "#Clojure Presentation"
@@ -245,6 +258,9 @@
 
 (reagent/render-component [main-container]
                           (. js/document (getElementById "app")))
+
+
+
 
 (def keyboard-events
     (.-KEYDOWN events/EventType))
