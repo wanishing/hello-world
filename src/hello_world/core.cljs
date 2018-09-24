@@ -13,7 +13,6 @@
 
 (enable-console-print!)
 
-
 (def css-path (str "/Users/talwanich/clojurescript/hello-world/resources/public/css/style.css"))
 
 (def styles
@@ -220,7 +219,7 @@
                    body))))
 
 
-(def slides [intro, repl, #(repl "#data types - int" "(+ 1 10)")])
+(def slides [intro, repl, #(repl "#int" "(+ 1 10)")])
 
 (defn slide []
   (fn []

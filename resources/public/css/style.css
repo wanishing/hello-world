@@ -139,19 +139,20 @@ q {font-style: italic;}
 textarea {
     background: url("backgrounds/linedpaper.png") center center no-repeat; /* This ruins default border */
     border: 2px solid #888;
-    padding-bottom: 10px;
+    /*padding-bottom: 10px;
     padding-left: 10px;
     padding-right: 10px;
     padding-top: 10px;
     font-size: 25px;
-    margin-top: -10px;
+    margin-top: -10px;*/
 }
 
 table {
     border-collapse: separate;
     border-spacing: 200px 0;
-    position: center;
-    margin-left: -200px;
+    position: left;
+    margin-left: -100px;
+    margin-bottom: -200px;
 }
 
 td {
