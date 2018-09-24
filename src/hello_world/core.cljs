@@ -6,7 +6,8 @@
             [cljs.reader :refer [read-string]]
             [cljs.js :refer [empty-state eval js-eval]]
             [goog.events :as events]
-            [cljs.core.async :refer [chan dropping-buffer put! <! go]])
+            [cljs.core.async :refer [chan dropping-buffer put! <! go]]
+            [cljs.pprint :refer [pprint]])
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:import  [goog.events.EventType]))
 
@@ -73,7 +74,11 @@
        (m/component)))
 
 (defn with-style [dom style]
-  (conj [:div {:class (str style)} (nth dom 2)]))
+  (println "with-style: " dom)
+  (let [div [:div {:class (str style)}]]
+    (if (= :div (nth dom 0))
+      (conj div (nth dom 2))
+      (conj div dom))))
 
 (defn empty-slide []
   [:div {:class "slide-container"}])
@@ -81,7 +86,7 @@
 (defn simple-slide [title body]
   (let [container (empty-slide)
         dom-title (with-style (markdown title) "title")
-        dom-body (with-style (markdown body) "slide")]
+        dom-body (with-style body "slide")]
     (conj container
           dom-title
           dom-body)))
@@ -94,13 +99,12 @@
         acc
         (recur (rest args) (string/join seperator [acc (first args)]))))))
 
-
 (defn intro []
   (let [title "#clojure"
-        text (bullets ["modern Lisp dialect, on the JVM"
-                       "immutable data structures"
-                       "novel approach to concurrency, no locks"
-                       ])]
+        text (markdown (bullets ["modern Lisp dialect, on the JVM"
+                                 "immutable data structures"
+                                 "novel approach to concurrency, no locks"
+                                 ]))]
     (simple-slide title text)))
 
 (defn markdown-code [code]
@@ -114,20 +118,6 @@
            :data-lang "clojure"}
     (prn-str code)]])
 
-(defn syntax []
-  (let [container (empty-slide)
-        slide [:div
-               (code-block `(defn foo []
-                              (let [a (str "a")
-                                    b (str "b")]
-                                (println "B is " b)
-                                (println "A is " a))
-                              ))
-               ]]
-    (conj container
-          [:div {:class "title"} "Tile"]
-          slide))
-                 )
 
 (comment (defn editor [content]
            [:div.container-fluid
@@ -147,8 +137,8 @@
            (when (not-empty @content)
              (code-component @content))))
 
-(defn eval-str [s]
-  (println "eval-str " s)
+(defn eval-expr [s]
+  (println "eval-expr " s)
   (eval (empty-state)
         (read-string s)
         {:eval       js-eval
@@ -157,57 +147,117 @@
         identity))
 
 
-(defn code-component [input output]
-  (fn []
-    [:textarea
-     {:value @input
-      :on-change #(reset! input (-> % .-target .-value))}]
-    ))
+(defn render-code [this]
+  (.log js/console "render-code")
+  (->> this reagent/dom-node (.highlightBlock js/hljs)))
 
-(defn output-component [output]
-  (fn []
-    (code-block (str (:value @output)))))
+(defn result-ui [output]
+  (reagent/create-class
+   {:render (fn []
+              [:pre>code.clj
+               (with-out-str (pprint (get @output :value)))])
+    :component-did-mouth render-code
+    }))
 
 
 (println (intro))
 
+
+
+(defn table-with-cols [& args]
+  [:table
+     [:tbody
+      [:tr
+       (for [arg args]
+         [:td [arg]])]]])
+
+(println (table-with-cols "2" "4" "5"))
+
+(comment (defn editor-did-mouth [input]
+           (fn [this]
+             (let [cm (.fromTextArea js/CodeMirror
+                                     (reagent/dom-node this)
+                                     #js {:mode "clojure"
+                                          :lineNumbers true})]
+               (.on cm "change" #(reset! input (.getValue %)))))))
+
+
+(defn editor-did-mount [input]
+  (fn [this]
+    (let [cm (.fromTextArea  js/CodeMirror
+                             (reagent/dom-node this)
+                             #js {:mode "clojure"
+                                  :lineNumbers true})]
+      (.on cm "change" #(reset! input (.getValue %))))))
+
+(defn editor-ui [input]
+  (reagent/create-class
+   {:render (fn [] [:textarea
+                    {:default-value ""
+                     :auto-complete "off"}])
+    :component-did-mount (editor-did-mount input)}))
+
+(defn debug []
+  (let [input (reagent/atom nil)
+        output (reagent/atom nil)
+        editor (editor-ui input)
+        eval-btn (fn []
+                   [:button {:class "eval"
+                             :on-click #(reset! output (eval-expr @input))}])
+        result (result-ui output)
+        columns (fn [& args]
+                     (for [[key, arg] (map-indexed vector args)]
+                       [:td {:key key}
+                        (if (vector? arg) arg
+                            [arg])]))
+        body [:table
+              [:tbody
+               [:tr
+               (columns editor eval-btn result)]]]]
+    (simple-slide "#repl-debug"
+                  body)))
+
+(println (debug))
+
+
+
+
+
+
+
+
+(comment [:div.container-fluid {:style {:class "slide"}}
+          [:div.row
+           [:div.col-sm-6
+            [code-ct]]
+
+
+
+
+           [:div.col-sm-6
+            [:h3 "Preview"]
+            [output-ct]]]])
+(comment )
 (defn repl []
   (let [input (reagent/atom nil)
         output (reagent/atom nil)
         container (empty-slide)
-        code-ct (code-component input output)
-        output-ct (output-component output)]
+        code-ct (editor-ui input)
+        output-ct (result-ui output)]
     [:div {:class "slide-container"}
      (with-style (markdown "#repl") "title")
      [:div {:class "slide"}
       [:table
        [:tbody
         [:tr
-         [:td [code-ct]] [:td [:button
-          {:on-click #(reset! output (eval-str @input))}
-                           "eval!"]] [:td [output-ct]]]]]]
-     ]
-    ))
-
-(println (repl))
-
-(comment [:div.container-fluid {:style {:class "slide"}}
-          [:div.row
-           [:div.col-sm-6
-            [code-ct]]
-           [:div.col-sm-6
-            [:h3 "Preview"]
-            [output-ct]]]])
-(comment )
+         [:td
+          [code-ct]]
+         [:td [:button {:class "eval"
+                        :on-click #(reset! output (eval-expr @input))}]]
+         [:td [output-ct]]]]]]]))
 
 (defn slide3 []
-  (let [title "#Clojure Presen
-
-
-
-
-
-tation"
+  (let [title "#Clojure Presentation"
         text  (bullets ["Body **tesxt** is really awesome"
                         "more bullet"])]
     (simple-slide title text)))
@@ -221,12 +271,14 @@ tation"
                    :display "inline-block"}}]))
 
 
-(def slides [intro, repl, slide3, slide4])
+(def slides [intro, debug])
 
 (defn slide []
   (fn []
-    (let [current (nth slides (get @app-state :current))]
-       [current])))
+    (let [i (get @app-state :current)
+          current (nth slides i)]
+      (.log js/console (str "current slide: " i))
+      [current])))
 
 (defn prev-slide![]
   (println "prev-slide")
@@ -241,18 +293,6 @@ tation"
 (defn set-slide! [i]
   (swap! app-state assoc :current i))
 
-(defn prev-button []
-  (fn []
-    [:a {:class "prev"
-         :onClick prev-slide!}
-     "<"]))
-
-(defn next-button []
-  (fn []
-    [:a {:class "next"
-         :onClick next-slide!}
-     ">"]))
-
 
 (defn main-container []
   [:div {:class "slideshow-container"}
@@ -265,8 +305,6 @@ tation"
 
 (reagent/render-component [main-container]
                           (. js/document (getElementById "app")))
-
-
 
 
 (def keyboard-events

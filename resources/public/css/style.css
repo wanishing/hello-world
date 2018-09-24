@@ -117,6 +117,23 @@ q {font-style: italic;}
     margin-bottom: 100px;
 }
 
+.eval{
+    background: transparent;
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 8px;
+    transform: rotate(-45deg);
+/*
+    background: url("backgrounds/linedpaper.png");
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 27px;
+    font-family: Courier, monospace;*/
+}
+
 
 
 textarea {
@@ -150,7 +167,7 @@ https://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javasc
  * Based on dabblet (http://dabblet.com)
  * @author Lea Verou
  */
-
+/*
 code[class*="language-"],
 pre[class*="language-"] {
 	color: black;
@@ -192,8 +209,9 @@ code[class*="language-"]::selection, code[class*="language-"] ::selection {
 		text-shadow: none;
 	}
 }
-
+*/
 /* Code blocks */
+/*
 pre[class*="language-"] {
 	padding: 1em;
 	margin: .5em 0;
@@ -204,8 +222,9 @@ pre[class*="language-"] {
 pre[class*="language-"] {
 	background: #f5f2f0;
 }
-
+*/
 /* Inline code */
+/*
 :not(pre) > code[class*="language-"] {
 	padding: .1em;
 	border-radius: .3em;
@@ -286,3 +305,4 @@ font-weight: bold;
 
 
 }
+*/

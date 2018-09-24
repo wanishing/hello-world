@@ -11,6 +11,7 @@
                  [reagent "0.7.0"]
                  [markdown-to-hiccup "0.3.0"]
                  [garden "1.3.6"]
+                 [hiccup "1.0.5"]
                  [org.clojure/core.async "0.4.474"]]
 
   :plugins [[lein-figwheel "0.5.16"]
@@ -40,8 +41,6 @@
                            ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
                            ;; https://github.com/binaryage/cljs-devtools
                            :preloads [devtools.preload]
-                           :externs ["externs/syntax.js"]
-
                            }}
                ;; This next build is a compressed minified build for
                ;; production. You can build this with:
