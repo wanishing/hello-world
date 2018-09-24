@@ -12,7 +12,7 @@
     font-size: 27px;
     margin-top: -200px;
     margin-right: 100px;
-    margin-bottom: 100px;
+    margin-bottom: 200px;
     margin-left: -200px;
     font-family: Courier, monospace;
     /*background-color: #EBEBEB;*/
@@ -112,9 +112,9 @@ q {font-style: italic;}
     background: url("backgrounds/linedpaper.png") center center no-repeat; /* This ruins default border */
     margin-top: 100px;
     margin-right: 100px;
-    margin-bottom: 100px;
+    position: center;
     margin-left: 200px;
-
+    margin-bottom: 100px;
 }
 
 
@@ -130,7 +130,16 @@ textarea {
     margin-top: -10px;
 }
 
+table {
+    border-collapse: separate;
+    border-spacing: 200px 0;
+    position: center;
+    margin-left: -200px;
+}
 
+td {
+    padding: 27px 0px ;
+}
 
 
 

@@ -97,9 +97,9 @@
 
 (defn intro []
   (let [title "#clojure"
-        text (bullets ["modern Lisp dialect"
-                       "runs on the JVM"
+        text (bullets ["modern Lisp dialect, on the JVM"
                        "immutable data structures"
+                       "novel approach to concurrency, no locks"
                        ])]
     (simple-slide title text)))
 
@@ -178,14 +178,17 @@
         code-ct (code-component input output)
         output-ct (output-component output)]
     [:div {:class "slide-container"}
-     [:div  {:class "title"} "repl"]
+     (with-style (markdown "#repl") "title")
      [:div {:class "slide"}
       [:table
        [:tbody
         [:tr
-         [:td [code-ct]] [:td [output-ct]]]]]]
+         [:td [code-ct]] [:td [:button
+          {:on-click #(reset! output (eval-str @input))}
+                           "eval!"]] [:td [output-ct]]]]]]
      ]
     ))
+
 (println (repl))
 
 (comment [:div.container-fluid {:style {:class "slide"}}
@@ -195,12 +198,16 @@
            [:div.col-sm-6
             [:h3 "Preview"]
             [output-ct]]]])
-(comment [:div>button
-          {:on-click #(reset! output (eval-str @input))}
-          "eval!"])
+(comment )
 
 (defn slide3 []
-  (let [title "#Clojure Presentation"
+  (let [title "#Clojure Presen
+
+
+
+
+
+tation"
         text  (bullets ["Body **tesxt** is really awesome"
                         "more bullet"])]
     (simple-slide title text)))
@@ -214,7 +221,7 @@
                    :display "inline-block"}}]))
 
 
-(def slides [intro, syntax, repl, slide3, slide4])
+(def slides [intro, repl, slide3, slide4])
 
 (defn slide []
   (fn []
