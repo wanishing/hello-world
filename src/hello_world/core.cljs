@@ -199,8 +199,8 @@
 
 (defn repl
   ([]
-   (repl nil))
-  ([initial]
+   (repl "#repl" nil))
+  ([title initial]
    (let [input (atom initial)
          output (atom nil)
          editor (editor-ui input initial)
@@ -216,11 +216,11 @@
                [:tbody
                 [:tr
                  (columns editor eval-btn result)]]]]
-     (simple-slide "#repl"
+     (simple-slide title
                    body))))
 
 
-(def slides [intro, repl, #(repl "(+ 1 10)")])
+(def slides [intro, repl, #(repl "#data types - int" "(+ 1 10)")])
 
 (defn slide []
   (fn []
@@ -261,9 +261,7 @@
   (go-loop []
     (let [key (<! input)
           right 39
-          left 37
-          forward 70
-          backward 66]
+          left 37]
       (.log js/console (str "input: " key))
       (cond (= key right) (next! app-state slides)
             (= key left) (prev! app-state slides)))
