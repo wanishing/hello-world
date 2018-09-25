@@ -134,14 +134,23 @@
 
 ; ------ Examples --------
 
+
+
+(defn read [s]
+  (let [ss s]
+  (read-string ss)))
+
+
 (defn eval-expr [s]
-  (println "eval-expr " s)
-  (eval (empty-state)
-        (read-string s)
-        {:eval       js-eval
-         :source-map true
-         :context    :expr}
-        identity))
+  (let [res (eval (empty-state)
+                  (read s)
+                  {:eval       js-eval
+                   :source-map true
+                   :context    :expr}
+                  identity)]
+    (println "eval-raw:  " s)
+    (println "eval: " res)
+    res))
 
 (defn render-code [this]
   (->> this reagent/dom-node (.highlightBlock js/hljs)))
@@ -149,10 +158,11 @@
 (defn result-ui [output]
   (reagent/create-class
    {:render (fn []
-              [:pre>code.clj
-               (if-let [output (get @output :value)]
-                 (with-out-str (pprint output))
-                 "")])
+              [:div {:class "result"}
+               [:pre>code.clj
+                (if-let [output (get @output :value)]
+                  (prn-str output)
+                  "")]])
     :component-did-mouth render-code}))
 
 (defn editor-did-mount [input]
@@ -219,7 +229,7 @@
                    body))))
 
 
-(def slides [intro, repl, #(repl "#int" "(+ 1 10)")])
+(def slides [intro, #(repl "#primitives" (prn-str '(map type ["Hello" 1 123])))])
 
 (defn slide []
   (fn []
@@ -235,7 +245,8 @@
    (for [i (range (count slides))]
      [:span {:class "dot"
           :key (str i)
-          :onClick #(set-slide! i)}])]])
+             :onClick #(set-slide! i)}])]])
+
 
 (reagent/render-component [main-container]
                           (. js/document (getElementById "app")))
@@ -261,10 +272,10 @@
     (let [key (<! input)
           right 39
           left 37]
-      (.log js/console (str "input: " key))
       (cond (= key right) (next! app-state slides)
             (= key left) (prev! app-state slides)))
     (recur)))
+
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
