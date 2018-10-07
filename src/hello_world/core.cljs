@@ -127,14 +127,20 @@
 (defn intro []
   (let [title "#clojure"
         text (markdown (bullets ["modern Lisp dialect, on the JVM"
-                                 "immutable data structures"
-                                 "novel approach to concurrency, no locks"
+                                 "immutable persistent data structures"
+                                 "built-in support concurrency - no locks"
                                  ]))]
     (simple-slide title text)))
 
+;---- lisp  -----
+; macro, functional style, high order, loops, code as data, lists, Dynamic polymorphism
+
+(defn lisp []
+  (let [title "#clojure as Lisp"
+        body (code-block '(let [x 1]
+                            (* x x)))]
+    (simple-slide title body)))
 ; ------ Examples --------
-
-
 
 (defn read [s]
   (let [ss s]
@@ -183,28 +189,15 @@
               [:textarea
                {:value initial
                 :auto-complete "off"
+                :class "codesnapshot"
                 :on-change #(reset! input (.getValue %))}])
     :component-did-mount (editor-did-mount input)})))
 
-(defn debug []
-  (let [input (reagent/atom nil)
-        output (reagent/atom nil)
-        editor (editor-ui input)
-        eval-btn (fn []
-                   [:button {:class "eval"
-                             :on-click #(reset! output (eval-expr @input))}])
-        result (result-ui output)
-        columns (fn [& args]
-                     (for [[key, arg] (map-indexed vector args)]
-                       [:td {:key key}
-                        (if (vector? arg) arg
-                            [arg])]))
-        body [:table
-              [:tbody
-               [:tr
-               (columns editor eval-btn result)]]]]
-    (simple-slide "#repl-debug"
-                  body)))
+
+
+
+
+
 
 (defn repl
   ([]
@@ -229,7 +222,43 @@
                    body))))
 
 
-(def slides [intro, #(repl "#primitives" (prn-str '(map type ["Hello" 1 123])))])
+(defn code-did-mount [input]
+  (fn [this]
+    (let [cm (.fromTextArea  js/CodeMirror
+                             (reagent/dom-node this)
+                             #js {:mode "clojure"
+                                  :lineNumbers true})]
+      (.on cm "change" #(reset! input (.getValue %))))))
+
+
+(defn code-ui
+  ([input]
+   (code-ui input ""))
+  ([input initial]
+   (reagent/create-class
+    {:render (fn []
+               [:textarea
+                {:value initial
+                 :auto-complete "off"
+                 :class "codesnapshot"
+                 :on-change #(reset! input (.getValue %))}])
+     :component-did-mount (code-did-mount input)})))
+
+(defn debug
+  ([title]
+   (debug title nil))
+  ([title initial]
+   (let [input (atom initial)
+         code (code-ui input initial)
+         body [code]]
+     (simple-slide title
+                   body))))
+
+(def slides [intro, lisp, #(debug "#clojure as Lisp" (prn-str '(->> [{:type "angry dog", :human-friendly 10},
+                                                                     {:type "angry hippopotamus", :human-friendly 4},
+                                                                     {:type "angry human", :human-friendly -1}]
+                                                                    (filter (fn [crt] (< (:human-friendly crt) 5)))
+                                                                    (map (fn [crt] (:type crt))))))])
 
 (defn slide []
   (fn []
@@ -256,6 +285,7 @@
 
 (def event-source
   (.-body js/document))
+
 
 (defn extract-key [evt]
   (.-keyCode evt))

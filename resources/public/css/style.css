@@ -9,27 +9,27 @@
 .slide {
     padding: 80px;
     position: center;
-    font-size: 27px;
-    margin-top: -200px;
+    font-size: 35px;
+    display: flex;
+    margin-top: -200px;/*
     margin-right: 100px;
     margin-bottom: 200px;
-    margin-left: -200px;
+    margin-left: -200px;*/
     font-family: Courier, monospace;
     /*background-color: #EBEBEB;*/
 }
 
 .title {
-    padding: 50px;
     position: center;
+    padding: 50px;
+    /*position: center;*/
     font-size: 30px;
     /*font-family: Jazz LET, fantasy ;*/
     /*font-family: Comic Sans MS, Comic Sans, cursive;*/
     /*font-family: Andale Mono, monospace	;*/
     font-family: Courier, monospace;
-    margin-left: 200px;
-    margin-top: -80px;
-    margin-right: 100px;
     margin-bottom: 100px;
+    display: flex;
 }
 
 .slide-container {
@@ -127,6 +127,16 @@ q {font-style: italic;}
 }
 
 
+codesnapshot {
+    background: url("backgrounds/linedpaper.png") center center no-repeat; /* This ruins default border */
+    border: 2px solid #888;
+/*padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    font-size: 25px;
+    margin-top: -10px;*/
+}
 
 textarea {
     background: url("backgrounds/linedpaper.png") center center no-repeat; /* This ruins default border */
