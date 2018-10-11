@@ -194,11 +194,6 @@
     :component-did-mount (editor-did-mount input)})))
 
 
-
-
-
-
-
 (defn repl
   ([]
    (repl "#repl" nil))
@@ -248,17 +243,23 @@
   ([title]
    (debug title nil))
   ([title initial]
-   (let [input (atom initial)
+   (let [initial (with-out-str (pprint initial))
+         input (atom initial)
          code (code-ui input initial)
          body [code]]
      (simple-slide title
                    body))))
 
-(def slides [intro, lisp, #(debug "#clojure as Lisp" (prn-str '(->> [{:type "angry dog", :human-friendly 10},
-                                                                     {:type "angry hippopotamus", :human-friendly 4},
-                                                                     {:type "angry human", :human-friendly -1}]
-                                                                    (filter (fn [crt] (< (:human-friendly crt) 5)))
-                                                                    (map (fn [crt] (:type crt))))))])
+(println (prn-str '(->> [{:type "angry dog", :human-friendly 10},
+                         {:type "angry hippopotamus", :human-friendly 4},
+                         {:type "angry human", :human-friendly -1}]
+                        (filter (fn [crt] (< (:human-friendly crt) 5)))
+                        (map (fn [crt] (:type crt))))))
+(def slides [intro, lisp, #(debug "#clojure as Lisp" '(->> [{:type "angry dog", :human-friendly 10},
+                                                            {:type "angry hippopotamus", :human-friendly 4},
+                                                            {:type "angry human", :human-friendly -1}]
+                                                           (filter (fn [crt] (< (:human-friendly crt) 5)))
+                                                           (map (fn [crt] (:type crt)))))])
 
 (defn slide []
   (fn []
