@@ -102,13 +102,15 @@
 (defn empty-slide []
   [:div {:class "slide-container"}])
 
-(defn simple-slide [title body]
+(defn naked-slide [title body]
   (let [container (empty-slide)
-        dom-title (with-style (markdown title) "title")
-        dom-body (with-style body "slide")]
+        dom-title (with-style (markdown title) "title")]
     (conj container
           dom-title
-          dom-body)))
+          body)))
+
+(defn simple-slide [title body]
+  (naked-slide title (with-style body "slide")))
 
 (defn next! [atom coll]
   (let [cyclic-inc #(mod (inc %) (count coll))]
@@ -123,7 +125,10 @@
 (defn set-slide! [i]
   (swap! app-state assoc :current i))
 
+(defn pretty [s]
+  (with-out-str (pprint s)))
 ; ------ Intro ------------
+
 (defn intro []
   (let [title "#clojure"
         text (markdown (bullets ["modern Lisp dialect, on the JVM"
@@ -145,6 +150,24 @@
                                  ]))]
     (simple-slide title text)))
 
+(defn count-newlines [a]
+  (reagent/track (fn []
+             (count (re-seq #"\n" @a)))))
+
+(defn edit-card [initial]
+  (reagent/with-let [content (atom initial)
+                     counter (count-newlines content)]
+    (.log js/console @content)
+    [:textarea
+     {:rows (+ 3 @counter)
+      :class "codesnapshot"
+      :style {:resize "none"
+              :width "90%"
+              :display "block"
+              :overflow "auto"}
+      :value initial
+      :on-change #(do
+                    (reset! content (.. % -target -value)))}]))
 
 
 (defn code-did-mount [input]
@@ -156,39 +179,30 @@
       (.on cm "change" #(reset! input (.getValue %))))))
 
 
-(defn code-ui
-  ([input]
-   (code-ui input ""))
-  ([input initial]
-   (reagent/create-class
-    {:render (fn []
-               [:textarea
-                {:value initial
-                 :auto-complete "off"
-                 :class "codesnapshot"
-                 :on-change #(reset! input (.getValue %))}])
-     :component-did-mount (code-did-mount input)})))
+(defn code-ui [input]
+  (reagent/create-class
+   {:render (fn []
+              [edit-card input])
+    :component-did-mount (code-did-mount input)}))
 
 (defn code-slide
   ([title]
    (code-slide title nil))
   ([title initial]
-   (let [input (atom initial)
-         code (code-ui input initial)
+   (let [code (code-ui initial)
          body [code]]
-     (simple-slide title
+     (naked-slide title
                    body))))
 
 (defn lisp1 []
   (let [title "#clojure as Lisp - syntax"
-        text (prn-str '(let [string "So nice to be string"
-                             some-integer 123
-                             keyboard :keyboard
-                             symbol (quote "symbol")
-                             some-vector [1989 "great" :year]
-                             some-list  (1 2 3 5 8)
-                             some-set {"Heed", 2.0}
-                             some-map {:key "value"}]))]
+        text (pretty '{:string "Hello people" :integer 123
+                    :keyboard :keyboar
+                    :symbol (quote "symbol")
+                    :vector [1989 "great" :year]
+                    :list  (1 2 3 5 8)
+                    :set {"Heed", 2.0}
+                    :map {:key "value"}})]
     (code-slide title text)))
 ; ------ Examples --------
 
