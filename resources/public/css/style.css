@@ -21,6 +21,16 @@
     /*background-color: #EBEBEB;*/
 }
 
+codesnapshot {
+    font-size: 25px;
+    padding: 80px;
+    position: center;
+    margin-left: -100px;
+}
+
+
+
+
 .title {
     position: center;
     padding: 50px;
@@ -41,6 +51,14 @@
     margin-bottom: 100px;
     /*background-color: #EBEBEB;*/
 }
+
+.code-container {
+    padding: 70px;
+    position: center;
+    margin-left: 100px;
+    margin-bottom: 100px;
+    /*background-color: #EBEBEB;*/
+}p
 /* Next & previous buttons */
 .prev, .next {
   cursor: pointer;
@@ -129,29 +147,19 @@ q {font-style: italic;}
 }
 
 
-codesnapshot {
-    background: url("backgrounds/linedpaper.png") center center no-repeat; /* This ruins default border */
-    border: 2px solid #888;
-    font-size: 25px;
-    margin-top: -10px;
-    width: "90%";
-    margin-top: -200px;
-    margin-right: 100px;/*
-    margin-bottom: 200px;*/
-    margin-left: -200px;
-}
 
 textarea {
-    background: url("backgrounds/linedpaper.png") center center no-repeat; /* This ruins default border */
-    border: 20px solid #888;
-    width: 900px;
-    height: 950px;
-/*padding-bottom: 10px;
+/*    background: url("backgrounds/linedpaper.png") center center no-repeat; /* This ruins default border */
+  /*  border: 20px solid #888;*/
+    width: "90%";
+    height: 0px;
+    margin-left: -900px;
+    padding-bottom: 10px;
     padding-left: 10px;
     padding-right: 10px;
     padding-top: 10px;
-    font-size: 25px;
-    margin-top: -10px;*/
+    font-size: 205px;
+    margin-top: -200px;
 }
 
 table {

@@ -102,12 +102,18 @@
 (defn empty-slide []
   [:div {:class "slide-container"}])
 
-(defn naked-slide [title body]
-  (let [container (empty-slide)
-        dom-title (with-style (markdown title) "title")]
-    (conj container
-          dom-title
-          body)))
+(defn empty-code-slide []
+  [:div {:class "code-container"}])
+
+(defn naked-slide
+  ([title body]
+   (let [container (empty-slide)
+         dom-title (with-style (markdown title) "title")]
+     (conj container
+           dom-title
+           body))))
+
+
 
 (defn simple-slide [title body]
   (naked-slide title (with-style body "slide")))
@@ -155,27 +161,26 @@
              (count (re-seq #"\n" @a)))))
 
 (defn edit-card [initial]
-  (reagent/with-let [content (atom initial)
-                     counter (count-newlines content)]
-    (.log js/console @content)
+  (reagent/with-let [content (atom initial)]
     [:textarea
-     {:rows (+ 3 @counter)
-      :class "codesnapshot"
-      :style {:resize "none"
-              :width "90%"
+     {:style {:resize "none"
+              :width "10%"
               :display "block"
               :overflow "auto"}
-      :value initial
-      :on-change #(do
-                    (reset! content (.. % -target -value)))}]))
+      :value initial}]))
 
+(comment
+:style {:resize "none"
+                 :width "90%"
+                 :display "block"
+                 :overflow "auto"})
 
 (defn code-did-mount [input]
   (fn [this]
     (let [cm (.fromTextArea  js/CodeMirror
                              (reagent/dom-node this)
                              #js {:mode "clojure"
-                                  :lineNumbers true})]
+                                      :lineNumbers true})]
       (.on cm "change" #(reset! input (.getValue %))))))
 
 
@@ -185,14 +190,20 @@
               [edit-card input])
     :component-did-mount (code-did-mount input)}))
 
+
+
 (defn code-slide
   ([title]
    (code-slide title nil))
   ([title initial]
-   (let [code (code-ui initial)
+   (let [container (empty-code-slide)
+         title (with-style (markdown title) "title")
+         code (code-ui initial)
          body [code]]
-     (naked-slide title
-                   body))))
+     (conj container
+           title
+           body))))
+
 
 (defn lisp1 []
   (let [title "#clojure as Lisp - syntax"
