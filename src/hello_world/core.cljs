@@ -152,21 +152,17 @@
         text (markdown (bullets ["functional"
                                  "code as data (as code)"
                                  "dynamically typed"
+                                 "enables high level of abstraction"
                                  "(almost) no syntax"
                                  ]))]
     (simple-slide title text)))
 
-(defn count-newlines [a]
-  (reagent/track (fn []
-             (count (re-seq #"\n" @a)))))
 
 (defn edit-card [initial]
   (reagent/with-let [content (atom initial)]
     [:textarea
-     {:style {:resize "none"
-              :width "10%"
-              :display "block"
-              :overflow "auto"}
+     {:style {
+              :font-size "400px"}
       :value initial}]))
 
 (comment
@@ -191,7 +187,6 @@
     :component-did-mount (code-did-mount input)}))
 
 
-
 (defn code-slide
   ([title]
    (code-slide title nil))
@@ -199,10 +194,11 @@
    (let [container (empty-code-slide)
          title (with-style (markdown title) "title")
          code (code-ui initial)
-         body [code]]
-     (conj container
-           title
-           body))))
+         body (with-style [code] "code-slide")
+         slide (conj container
+                     title
+                     body)]
+     slide)))
 
 
 (defn lisp1 []
@@ -347,7 +343,7 @@
               (= key left) (prev! app-state slides)))
       (recur))))
 
-
+(listen!)
 
 (defn on-js-reload []
 
