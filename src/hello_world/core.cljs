@@ -158,25 +158,34 @@
     (simple-slide title text)))
 
 
-(defn edit-card [initial]
-  (reagent/with-let [content (atom initial)]
-    [:textarea
-     {:style {
-              :font-size "400px"}
-      :value initial}]))
+(defn count-newlines [a]
+  (reagent/track (fn []
+                   (count (re-seq #"\n" @a)))))
 
-(comment
-:style {:resize "none"
+
+(defn edit-card [initial]
+  (reagent/with-let [content (atom initial)
+                     counter (count-newlines content)]
+    (.log js/console "counter " @counter)
+    [:textarea
+     {:rows (+ 100 @counter)
+      :on-change #(do
+                    (reset! content (.. % -target -value)))
+      :value initial}]))
+(comment :style {:resize "none"
                  :width "90%"
                  :display "block"
                  :overflow "auto"})
 
+
 (defn code-did-mount [input]
   (fn [this]
-    (let [cm (.fromTextArea  js/CodeMirror
+    (let [count-newlines #(count (re-seq #"\n" %))
+          cm (.fromTextArea  js/CodeMirror
                              (reagent/dom-node this)
                              #js {:mode "clojure"
-                                      :lineNumbers true})]
+                                  :lineNumbers true})]
+      (.setSize cm 1200 (* 50 (count-newlines input)))
       (.on cm "change" #(reset! input (.getValue %))))))
 
 

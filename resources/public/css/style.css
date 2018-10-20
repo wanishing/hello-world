@@ -6,29 +6,7 @@
   background-image: url("backgrounds/linedpaper.png");
 }
 /* Slides */
-.slide {
-    padding: 80px;
-    position: center;
-    font-size: 35px;
-    display: flex;
-    margin-top: -200px;/*
 
-
-    margin-right: 100px;
-    margin-bottom: 200px;
-    margin-left: -200px;*/
-    font-family: Courier, monospace;
-    /*background-color: #EBEBEB;*/
-}
-
-.code-slide {
-    font-size: 35px;
-    padding: 80px;
-    position: center;
-    margin-top: -120px;
-    margin-bottom: 100px;
-    margin-right: -10px;
-}
 
 
 
@@ -54,14 +32,37 @@
     /*background-color: #EBEBEB;*/
 }
 
+.slide {
+    padding: 80px;
+    position: center;
+    font-size: 35px;
+    display: flex;
+    margin-top: -200px;/*
+
+
+    margin-right: 100px;
+    margin-bottom: 200px;
+    margin-left: -200px;*/
+    font-family: Courier, monospace;
+    /*background-color: #EBEBEB;*/
+}
+
 .code-container {
     padding: 70px;
     position: center;
-    margin-left: 50px;
-    margin-top: -100px;
+    margin-left: 200px;
     margin-bottom: 100px;
         /*background-color: #EBEBEB;*/
 }
+
+.code-slide {
+    font-size: 35px;
+    padding: 80px;
+    position: center;
+    margin-top: -200px;
+    margin-left: -100px;
+}
+
 
 /* Next & previous buttons */
 .prev, .next {
@@ -154,8 +155,7 @@ q {font-style: italic;}
 
 textarea {
 /*    background: url("backgrounds/linedpaper.png") center center no-repeat; /* This ruins default border */
-  /*  border: 20px solid #888;*/
-    font-size: 205px;
+    border: 20px solid #888;
 }
 
 table {
