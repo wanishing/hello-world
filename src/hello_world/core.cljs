@@ -102,44 +102,115 @@
 (defn empty-slide []
   [:div {:class "slide-container"}])
 
+(defn empty-code-slide []
+  [:div {:class "code-container"}])
+
+(defn naked-slide
+  ([title body]
+   (let [container (empty-slide)
+         dom-title (with-style (markdown title) "title")]
+     (conj container
+           dom-title
+           body))))
+
+
+
 (defn simple-slide [title body]
-  (let [container (empty-slide)
-        dom-title (with-style (markdown title) "title")
-        dom-body (with-style body "slide")]
-    (conj container
-          dom-title
-          dom-body)))
+  (naked-slide title (with-style body "slide")))
 
 (defn next! [atom coll]
   (let [cyclic-inc #(mod (inc %) (count coll))]
-    (println "next! " atom ", " coll)
+    (println "next! " atom ", " coll " slides: ", (count coll))
     (swap! atom update-in [:current] cyclic-inc)))
 
 (defn prev! [atom coll]
   (let [cyclic-dec #(mod (dec %) (count coll))]
-    (println "prev! "  atom ", " coll)
+    (println "prev! "  atom ", " coll, " slides: ", (count coll))
     (swap! atom update-in [:current] cyclic-dec)))
 
 (defn set-slide! [i]
   (swap! app-state assoc :current i))
 
+(defn pretty [s]
+  (with-out-str (pprint s)))
 ; ------ Intro ------------
+
 (defn intro []
   (let [title "#clojure"
         text (markdown (bullets ["modern Lisp dialect, on the JVM"
                                  "immutable persistent data structures"
-                                 "built-in support concurrency - no locks"
+                                 "built-in support concurrency (no locks)"
                                  ]))]
     (simple-slide title text)))
 
 ;---- lisp  -----
 ; macro, functional style, high order, loops, code as data, lists, Dynamic polymorphism
 
+
 (defn lisp []
   (let [title "#clojure as Lisp"
-        body (code-block '(let [x 1]
-                            (* x x)))]
-    (simple-slide title body)))
+        text (markdown (bullets ["functional"
+                                 "code as data (as code)"
+                                 "dynamically typed"
+                                 "enables high level of abstraction"
+                                 "(almost) no syntax"
+                                 ]))]
+    (simple-slide title text)))
+
+
+(defn edit-card [initial]
+  (reagent/with-let [content (atom initial)]
+    [:textarea
+     {:style {
+              :font-size "400px"}
+      :value initial}]))
+
+(comment
+:style {:resize "none"
+                 :width "90%"
+                 :display "block"
+                 :overflow "auto"})
+
+(defn code-did-mount [input]
+  (fn [this]
+    (let [cm (.fromTextArea  js/CodeMirror
+                             (reagent/dom-node this)
+                             #js {:mode "clojure"
+                                      :lineNumbers true})]
+      (.on cm "change" #(reset! input (.getValue %))))))
+
+
+(defn code-ui [input]
+  (reagent/create-class
+   {:render (fn []
+              [edit-card input])
+    :component-did-mount (code-did-mount input)}))
+
+
+(defn code-slide
+  ([title]
+   (code-slide title nil))
+  ([title initial]
+   (let [container (empty-code-slide)
+         title (with-style (markdown title) "title")
+         code (code-ui initial)
+         body (with-style [code] "code-slide")
+         slide (conj container
+                     title
+                     body)]
+     slide)))
+
+
+(defn lisp1 []
+  (let [title "#clojure as Lisp - syntax"
+        text (pretty '{:string "Hello people" :integer 123
+                    :keyboard :keyboar
+                    :symbol (quote "symbol")
+                    :vector [1989 "great" :year]
+                    :list  (1 2 3 5 8)
+                    :set {"Heed", 2.0}
+                    :map {:key "value"}})]
+    (code-slide title text)))
 ; ------ Examples --------
 
 (defn read [s]
@@ -217,15 +288,6 @@
                    body))))
 
 
-(defn code-did-mount [input]
-  (fn [this]
-    (let [cm (.fromTextArea  js/CodeMirror
-                             (reagent/dom-node this)
-                             #js {:mode "clojure"
-                                  :lineNumbers true})]
-      (.on cm "change" #(reset! input (.getValue %))))))
-
-
 (defn code-ui
   ([input]
    (code-ui input ""))
@@ -250,17 +312,12 @@
      (simple-slide title
                    body))))
 
-(println (prn-str '(->> [{:type "angry dog", :human-friendly 10},
-                         {:type "angry hippopotamus", :human-friendly 4},
-                         {:type "angry human", :human-friendly -1}]
-                        (filter (fn [crt] (< (:human-friendly crt) 5)))
-                        (map (fn [crt] (:type crt))))))
+
 (def slides [intro, lisp, #(debug "#clojure as Lisp" '(->> [{:type "angry dog", :human-friendly 10},
                                                             {:type "angry hippopotamus", :human-friendly 4},
                                                             {:type "angry human", :human-friendly -1}]
                                                            (filter (fn [crt] (< (:human-friendly crt) 5)))
                                                            (map (fn [crt] (:type crt)))))])
-
 (defn slide []
   (fn []
     (let [i (get @app-state :current)
@@ -298,17 +355,20 @@
                    #(put! event-ch (extract-key %)))
     event-ch))
 
-(let [input (listen-to-keyboard)]
-  (go-loop []
-    (let [key (<! input)
-          right 39
-          left 37]
-      (cond (= key right) (next! app-state slides)
-            (= key left) (prev! app-state slides)))
-    (recur)))
+(defn listen! []
+  (let [input (listen-to-keyboard)]
+    (go-loop []
+      (let [key (<! input)
+            right 39
+            left 37]
+        (cond (= key right) (next! app-state slides)
+              (= key left) (prev! app-state slides)))
+      (recur))))
 
+(listen!)
 
 (defn on-js-reload []
+
   ;; optionally touch your app-state to force rerendering depending on
   ;; your application
   ;; (swap! app-state update-in [:__figwheel_counter] inc)
