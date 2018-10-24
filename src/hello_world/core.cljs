@@ -209,7 +209,6 @@
      slide)))
 
 
-
 (defn lisp1 []
   (let [title "#clojure as Lisp - data types"
         text (pretty '{:string "The author of Clojure is Rich Hickey"
