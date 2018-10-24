@@ -120,12 +120,10 @@
 
 (defn next! [atom coll]
   (let [cyclic-inc #(mod (inc %) (count coll))]
-    (println "next! " atom ", " coll " slides: ", (count coll))
     (swap! atom update-in [:current] cyclic-inc)))
 
 (defn prev! [atom coll]
   (let [cyclic-dec #(mod (dec %) (count coll))]
-    (println "prev! "  atom ", " coll, " slides: ", (count coll))
     (swap! atom update-in [:current] cyclic-dec)))
 
 (defn set-slide! [i]
@@ -158,25 +156,35 @@
     (simple-slide title text)))
 
 
-(defn edit-card [initial]
-  (reagent/with-let [content (atom initial)]
-    [:textarea
-     {:style {
-              :font-size "400px"}
-      :value initial}]))
 
-(comment
-:style {:resize "none"
+(defn count-newlines [a]
+  (reagent/track (fn []
+                   (count (re-seq #"\n" @a)))))
+
+
+(defn edit-card [initial]
+  (reagent/with-let [content (atom initial)
+                     counter (count-newlines content)]
+    (.log js/console "counter " @counter)
+    [:textarea
+     {:rows (+ 100 @counter)
+      :on-change #(do
+                    (reset! content (.. % -target -value)))
+      :value initial}]))
+(comment :style {:resize "none"
                  :width "90%"
                  :display "block"
                  :overflow "auto"})
 
+
 (defn code-did-mount [input]
   (fn [this]
-    (let [cm (.fromTextArea  js/CodeMirror
+    (let [count-newlines #(count (re-seq #"\n" %))
+          cm (.fromTextArea  js/CodeMirror
                              (reagent/dom-node this)
                              #js {:mode "clojure"
-                                      :lineNumbers true})]
+                                  :lineNumbers true})]
+      (.setSize cm 1100 (* 50 (count-newlines input)))
       (.on cm "change" #(reset! input (.getValue %))))))
 
 
@@ -201,16 +209,37 @@
      slide)))
 
 
+
 (defn lisp1 []
-  (let [title "#clojure as Lisp - syntax"
-        text (pretty '{:string "Hello people" :integer 123
-                    :keyboard :keyboar
-                    :symbol (quote "symbol")
-                    :vector [1989 "great" :year]
-                    :list  (1 2 3 5 8)
-                    :set {"Heed", 2.0}
-                    :map {:key "value"}})]
+  (let [title "#clojure as Lisp - data types"
+        text (pretty '{:string "The author of Clojure is Rich Hickey"
+                       :keyword :first-release
+                       :integer 20090504
+                       :vector ["used extensively", 123, ["nested"]]
+                       :list  ("are you list?", true, false)
+                       :set {"Heed", 3.1}
+                       :function (fn [x y]
+                                   (if (<= x y)
+                                     y
+                                     x))
+                       :map {:key "value",
+                             "key" :value}})]
     (code-slide title text)))
+
+
+(defn code-debug []
+  (let [title "#clojure as Lisp - functional programming"
+        comment (str (char 59) "testcomment")
+        text (pretty comment)]
+    (code-slide title text)))
+
+
+(defn lisp-functional []
+  (let [title "#clojure as Lisp - funtional programming"
+        text (markdown (bullets ["function is value"
+                                 []
+                                 ]))]
+    (simple-slide title text)))
 ; ------ Examples --------
 
 (defn read [s]
@@ -288,6 +317,7 @@
                    body))))
 
 
+
 (defn code-ui
   ([input]
    (code-ui input ""))
@@ -313,11 +343,9 @@
                    body))))
 
 
-(def slides [intro, lisp, #(debug "#clojure as Lisp" '(->> [{:type "angry dog", :human-friendly 10},
-                                                            {:type "angry hippopotamus", :human-friendly 4},
-                                                            {:type "angry human", :human-friendly -1}]
-                                                           (filter (fn [crt] (< (:human-friendly crt) 5)))
-                                                           (map (fn [crt] (:type crt)))))])
+
+(def slides [intro, lisp, lisp1, lisp-functional, code-debug])
+
 (defn slide []
   (fn []
     (let [i (get @app-state :current)
@@ -355,17 +383,15 @@
                    #(put! event-ch (extract-key %)))
     event-ch))
 
-(defn listen! []
-  (let [input (listen-to-keyboard)]
-    (go-loop []
-      (let [key (<! input)
-            right 39
-            left 37]
-        (cond (= key right) (next! app-state slides)
-              (= key left) (prev! app-state slides)))
-      (recur))))
 
-(listen!)
+(let [input (listen-to-keyboard)]
+  (go-loop []
+    (let [key (<! input)
+          right 39
+          left 37]
+      (cond (= key right) (next! app-state slides)
+            (= key left) (prev! app-state slides)))
+    (recur)))
 
 (defn on-js-reload []
 
