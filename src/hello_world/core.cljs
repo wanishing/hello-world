@@ -137,15 +137,16 @@
   (let [title "#clojure"
         text (markdown (bullets ["modern Lisp dialect, on the JVM"
                                  "immutable persistent data structures"
-                                 "built-in support concurrency (no locks)"
+                                 "built-in support in concurrency (no locks)"
                                  ]))]
     (simple-slide title text)))
 
-;---- lisp  -----
+                                        ;---- lisp  -----
+; macro with debug
 ; macro, functional style, high order, loops, code as data, lists, Dynamic polymorphism
 
 
-(defn lisp []
+(defn clojure-as-lisp []
   (let [title "#clojure as Lisp"
         text (markdown (bullets ["functional"
                                  "code as data (as code)"
@@ -210,7 +211,7 @@
 
 
 
-(defn lisp1 []
+(defn data-types []
   (let [title "#clojure as Lisp - data types"
         text (pretty '{:string "The author of Clojure is Rich Hickey"
                        :keyword :first-release
@@ -234,10 +235,12 @@
     (code-slide title text)))
 
 
-(defn lisp-functional []
-  (let [title "#clojure as Lisp - funtional programming"
-        text (markdown (bullets ["function is value"
-                                 []
+(defn why-functional []
+  (let [title "#why functional?"
+        text (markdown (bullets ["program as a chain of transformations"
+                                 "composable"
+                                 "testable"
+                                 "even better - can reason about"
                                  ]))]
     (simple-slide title text)))
 ; ------ Examples --------
@@ -316,7 +319,7 @@
      (simple-slide title
                    body))))
 
-(def slides [intro, lisp, lisp1, lisp-functional, code-debug])
+(def slides [intro, clojure-as-lisp, why-functional, data-types, code-debug])
 
 (defn slide []
   (fn []
