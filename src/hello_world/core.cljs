@@ -243,6 +243,22 @@
                                  "even better - can reason about"
                                  ]))]
     (simple-slide title text)))
+
+(defn whats-functional []
+  (let [title "#what is functional  programming?"
+        text (markdown (bullets ["rooted in the theoretical framework of λ-calculus"
+                                 "can simulate any statful Turing machine"
+                                 "buliding blocks - pure functions"
+                                 ]))]
+    (simple-slide title text)))
+
+(defn pure-funcitons []
+  (let [title "#pure"
+        text (markdown (bullets ["rooted in the theoretical framework of λ-calculus"
+                                 "can simulate any statful Turing machine"
+                                 "buliding blocks - pure functions"
+                                 ]))]
+    (simple-slide title text)))
 ; ------ Examples --------
 
 (defn read [s]
@@ -319,7 +335,7 @@
      (simple-slide title
                    body))))
 
-(def slides [intro, clojure-as-lisp, why-functional, data-types, code-debug])
+(def slides [intro, clojure-as-lisp, why-functional, whats-functional, data-types, code-debug])
 
 (defn slide []
   (fn []
