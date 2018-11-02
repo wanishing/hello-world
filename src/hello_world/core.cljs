@@ -82,6 +82,19 @@
         acc
         (recur (rest args) (string/join seperator [acc (first args)]))))))
 
+(defn nested-bullets
+  ([args]
+   (nested-bullets args ""))
+  ([args acc]
+   (let [seperator (if (empty? acc) "* " "\n* ")
+         current (first args)
+         rest (rest args)
+         accc (string/join seperator [acc (if (vector? current)
+                                            (nested-bullets current)
+                                            current)])]
+     (if (empty? args) acc
+         (nested-bullets rest accc)))))
+
 (defn markdown-code [code]
   (let []
     (->> code
@@ -133,25 +146,29 @@
   (with-out-str (pprint s)))
 ; ------ Intro ------------
 
-(defn intro []
+(defn clojure []
   (let [title "#clojure"
         text (markdown (bullets ["modern Lisp dialect, on the JVM"
                                  "immutable persistent data structures"
                                  "built-in support in concurrency (no locks)"
+                                 "created by Rich Hickey"
                                  ]))]
     (simple-slide title text)))
+
+
+
 
                                         ;---- lisp  -----
 ; macro with debug
 ; macro, functional style, high order, loops, code as data, lists, Dynamic polymorphism
 
 
-(defn clojure-as-lisp []
-  (let [title "#clojure as Lisp"
+(defn why-clojure []
+  (let [title "#why clojure?"
         text (markdown (bullets ["functional"
                                  "code as data (as code)"
-                                 "dynamically typed"
                                  "enables high level of abstraction"
+                                 "distinctive approuch to State, Identity and Time"
                                  "(almost) no syntax"
                                  ]))]
     (simple-slide title text)))
@@ -230,7 +247,7 @@
 
 (defn code-debug []
   (let [title "#clojure as Lisp - functional programming"
-        comment (str (char 59) "testcomment")
+        comment (str (char 59) "tes)comment")
         text (pretty comment)]
     (code-slide title text)))
 
@@ -241,17 +258,21 @@
                                  "composable"
                                  "testable"
                                  "even better - can reason about"
+                                 "_Design is to take things apart in such a way that they can be put back together_ - R.H"
                                  ]))]
     (simple-slide title text)))
 
-(defn whats-functional []
-  (let [title "#what is functional  programming?"
+(defn functional-programming []
+  (let [title "#functional  programming"
         text (markdown (bullets ["rooted in the theoretical framework of λ-calculus"
-                                 "can simulate any statful Turing machine"
-                                 "buliding blocks - pure functions"
-                                 ]))]
+                                 "can simulate any stateful Turing machine"
+                                 "building blocks \n * functions (preferably pure) \n * (mostly) immtuable data"]))]
     (simple-slide title text)))
 
+(let [res (markdown (nested-bullets ["rooted"
+                                     "subblock" ["testing" "another"]
+                                     "tejej"]))]
+  (println res))
 (defn pure-funcitons []
   (let [title "#pure"
         text (markdown (bullets ["rooted in the theoretical framework of λ-calculus"
@@ -335,7 +356,7 @@
      (simple-slide title
                    body))))
 
-(def slides [intro, clojure-as-lisp, why-functional, whats-functional, data-types, code-debug])
+(def slides [clojure, why-clojure, why-functional, functional-programming, data-types, code-debug])
 
 (defn slide []
   (fn []
