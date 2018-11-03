@@ -7,7 +7,7 @@
             [cljs.js :refer [empty-state eval js-eval]]
             [goog.events :as events]
             [cljs.core.async :refer [chan dropping-buffer put! <! go]]
-            [cljs.pprint :refer [pprint]])
+            [cljs.pprint :as p])
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:import  [goog.events.EventType]))
 
@@ -133,12 +133,24 @@
   (swap! app-state assoc :current i))
 
 (defn pretty [s]
-  (with-out-str (pprint s)))
+  (p/with-pprint-dispatch
+    p/code-dispatch
+    (with-out-str (p/pprint s))))
 
 ;-- code componenet
 (defn count-newlines [a]
   (reagent/track (fn []
                    (count (re-seq #"\n" @a)))))
+
+(defn code-did-mount [input]
+  (fn [this]
+    (let [count-newlines #(count (re-seq #"\n" %))
+          cm (.fromTextArea  js/CodeMirror
+                             (reagent/dom-node this)
+                             #js {:mode "clojure"
+                                  :lineNumbers true})]
+      (.setSize cm 1400 (* 55 (count-newlines input)))
+      (.on cm "change" #(reset! input (.getValue %))))))
 
 (defn edit-card [initial]
   (reagent/with-let [content (atom initial)
@@ -149,15 +161,27 @@
                     (reset! content (.. % -target -value)))
       :value initial}]))
 
-(defn code-did-mount [input]
+(defn repl-card [input]
+  (fn []
+    [:textarea
+     {:value @input
+      :rows 1000
+      :auto-complete "off"
+      :on-change #(reset! input (.getValue %))}]))
+
+(defn editor-did-mount [input]
   (fn [this]
-    (let [count-newlines #(count (re-seq #"\n" %))
-          cm (.fromTextArea  js/CodeMirror
+    (let [cm (.fromTextArea  js/CodeMirror
                              (reagent/dom-node this)
                              #js {:mode "clojure"
                                   :lineNumbers true})]
-      (.setSize cm 1500 (* 55 (count-newlines input)))
       (.on cm "change" #(reset! input (.getValue %))))))
+
+(defn editor-ui [input]
+  (reagent/create-class
+   {:render (fn []
+              [repl-card input])
+    :component-did-mount (editor-did-mount input)}))
 
 (defn code-ui [input]
   (reagent/create-class
@@ -178,13 +202,82 @@
                      body)]
      slide)))
 
+(defn read [s]
+  (let [ss s]
+  (read-string ss)))
+
+
+(defn eval-expr [s]
+  (let [res (eval (empty-state)
+                  (read s)
+                  {:eval       js-eval
+                   :source-map true
+                   :context    :expr}
+                  identity)]
+    res))
+
+(defn render-code [this]
+  (->> this reagent/dom-node (.highlightBlock js/hljs)))
+
+(defn result-ui [output]
+  (reagent/create-class
+   {:render (fn []
+              [:div {:class "result"}
+               [:pre>code.clj
+                (if-let [output (get @output :value)]
+                  (prn-str output)
+                  "")]])
+    :component-did-mouth render-code}))
+
+
+(defn repl
+  ([]
+   (repl "#repl" nil))
+  ([title initial]
+   (let [input (atom initial)
+         output (atom nil)
+         editor (editor-ui input)
+         eval-btn (fn []
+                    [:button {:class "eval"
+                              :on-click #(reset! output (eval-expr @input))}])
+         result (result-ui output)
+         columns (fn [& args]
+                   (for [[key, arg] (map-indexed vector args)]
+                     [:td {:key key}
+                      [arg]]))
+         body [:table
+               [:tbody
+                [:tr
+                 (columns editor eval-btn result)]]]]
+     (simple-slide title
+                   body))))
+
+
+(defn repl-slide [title initial]
+  (let [input (atom initial)
+        output (atom nil)
+        editor (editor-ui input)
+        eval-btn (fn []
+                   [:button {:class "eval"
+                             :on-click #(reset! output (eval-expr @input))}])
+        result (result-ui output)
+        rows (fn [& args]
+                  (for [[key, arg] (map-indexed vector args)]
+                    [:td {:key key
+                          :height "100"}
+                     [arg]]))
+        body [:table
+              [:tbody
+               [:tr
+                (rows editor eval-btn result)]]]]
+    (simple-slide title
+                  body)))
 
 ; ------ Slides ------------
 
                                         ;---- lisp  -----
                                         ; macro with debug
                                         ; macro, functional style, high order, loops, code as data, lists, Dynamic polymorphism
-
 
 (defn clojure []
   (let [title "#clojure"
@@ -239,19 +332,9 @@
                      )]
     (code-slide title text)))
 
-(println (let [crts [{:type "dog" :human-friendly [100, 1000]}
-                             {:type "cat" :human-friendly [-32, 9]}
-                             {:type "homosapien" :human-friendly [-1000, 5.7]}]
-                       friendliness (fn [[mi ma]] (+ ma mi))
-                       cosmological-const 42
-                       friendly? (fn [crt] (<= cosmological-const
-                                               (friendliness (:human-friendly crt))))]
-                   (->> crts
-                        (filter friendly?)
-                        (map (fn [crt] (crt :type))))))
 (defn warmup-2 []
   (let [title "#(warmup 2)"
-        text (pretty (let [crts [{:type "dog" :human-friendly [100, 1000]}
+        text (pretty '(let [crts [{:type "dog" :human-friendly [100, 1000]}
                                   {:type "cat" :human-friendly [-32, 9]}
                                   {:type "homosapien" :human-friendly [-1000, 5.7]}]
                             friendliness (fn [[mi ma]] (+ ma mi))
@@ -262,7 +345,9 @@
                              (filter friendly?)
                              (map (fn [crt] (crt :type)))))
                      )]
+    (println (type text))
     (code-slide title text)))
+
 
 (defn warmup-3 []
   (let [title "#(warmup 3)"
@@ -275,85 +360,14 @@
                               (let [x (first vec)
                                     y ((f f) (rest vec))]
                                 (if (<= x y)
-                                  y
+p                                  y
                                   x))))))
                        [12 3 93 8 1 0 -1 2018 4.4])
                      )]
     (code-slide title text)))
 
+
 ; ------ Examples --------
-
-(defn read [s]
-  (let [ss s]
-  (read-string ss)))
-
-
-(defn eval-expr [s]
-  (let [res (eval (empty-state)
-                  (read s)
-                  {:eval       js-eval
-                   :source-map true
-                   :context    :expr}
-                  identity)]
-    res))
-
-(defn render-code [this]
-  (->> this reagent/dom-node (.highlightBlock js/hljs)))
-
-(defn result-ui [output]
-  (reagent/create-class
-   {:render (fn []
-              [:div {:class "result"}
-               [:pre>code.clj
-                (if-let [output (get @output :value)]
-                  (prn-str output)
-                  "")]])
-    :component-did-mouth render-code}))
-
-(defn editor-did-mount [input]
-  (fn [this]
-    (let [cm (.fromTextArea  js/CodeMirror
-                             (reagent/dom-node this)
-                             #js {:mode "clojure"
-                                  :lineNumbers true})]
-      (.on cm "change" #(reset! input (.getValue %))))))
-
-
-(defn editor-ui
-  ([input]
-   (editor-ui input ""))
-  ([input initial]
-   (reagent/create-class
-   {:render (fn []
-              [:textarea
-               {:value initial
-                :auto-complete "off"
-                :class "codesnapshot"
-                :on-change #(reset! input (.getValue %))}])
-    :component-did-mount (editor-did-mount input)})))
-
-
-(defn repl
-  ([]
-   (repl "#repl" nil))
-  ([title initial]
-   (let [input (atom initial)
-         output (atom nil)
-         editor (editor-ui input initial)
-         eval-btn (fn []
-                    [:button {:class "eval"
-                              :on-click #(reset! output (eval-expr @input))}])
-         result (result-ui output)
-         columns (fn [& args]
-                   (for [[key, arg] (map-indexed vector args)]
-                     [:td {:key key}
-                      [arg]]))
-         body [:table
-               [:tbody
-                [:tr
-                 (columns editor eval-btn result)]]]]
-     (simple-slide title
-                   body))))
 
 (def slides [clojure
              why-clojure
@@ -361,7 +375,8 @@
              functional-programming
              warmup
              warmup-2
-             warmup-3])
+             warmup-3
+             ])
 
 (defn slide []
   (fn []
