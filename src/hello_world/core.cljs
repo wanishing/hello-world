@@ -74,6 +74,8 @@
        (m/md->hiccup)
        (m/component)))
 
+
+
 (defn bullets [args]
   (loop [args args
          acc ""]
@@ -82,18 +84,6 @@
         acc
         (recur (rest args) (string/join seperator [acc (first args)]))))))
 
-(defn nested-bullets
-  ([args]
-   (nested-bullets args ""))
-  ([args acc]
-   (let [seperator (if (empty? acc) "* " "\n* ")
-         current (first args)
-         rest (rest args)
-         accc (string/join seperator [acc (if (vector? current)
-                                            (nested-bullets current)
-                                            current)])]
-     (if (empty? args) acc
-         (nested-bullets rest accc)))))
 
 (defn markdown-code [code]
   (let []
@@ -144,56 +134,20 @@
 
 (defn pretty [s]
   (with-out-str (pprint s)))
-; ------ Intro ------------
 
-(defn clojure []
-  (let [title "#clojure"
-        text (markdown (bullets ["modern Lisp dialect, on the JVM"
-                                 "immutable persistent data structures"
-                                 "built-in support in concurrency (no locks)"
-                                 "created by Rich Hickey"
-                                 ]))]
-    (simple-slide title text)))
-
-
-
-
-                                        ;---- lisp  -----
-; macro with debug
-; macro, functional style, high order, loops, code as data, lists, Dynamic polymorphism
-
-
-(defn why-clojure []
-  (let [title "#why clojure?"
-        text (markdown (bullets ["functional"
-                                 "code as data (as code)"
-                                 "enables high level of abstraction"
-                                 "distinctive approuch to State, Identity and Time"
-                                 "(almost) no syntax"
-                                 ]))]
-    (simple-slide title text)))
-
-
-
+;-- code componenet
 (defn count-newlines [a]
   (reagent/track (fn []
                    (count (re-seq #"\n" @a)))))
 
-
 (defn edit-card [initial]
   (reagent/with-let [content (atom initial)
                      counter (count-newlines content)]
-    (.log js/console "counter " @counter)
     [:textarea
-     {:rows (+ 100 @counter)
+     {:rows (+ 102 @counter)
       :on-change #(do
                     (reset! content (.. % -target -value)))
       :value initial}]))
-(comment :style {:resize "none"
-                 :width "90%"
-                 :display "block"
-                 :overflow "auto"})
-
 
 (defn code-did-mount [input]
   (fn [this]
@@ -202,16 +156,14 @@
                              (reagent/dom-node this)
                              #js {:mode "clojure"
                                   :lineNumbers true})]
-      (.setSize cm 1100 (* 50 (count-newlines input)))
+      (.setSize cm 1500 (* 55 (count-newlines input)))
       (.on cm "change" #(reset! input (.getValue %))))))
-
 
 (defn code-ui [input]
   (reagent/create-class
    {:render (fn []
               [edit-card input])
     :component-did-mount (code-did-mount input)}))
-
 
 (defn code-slide
   ([title]
@@ -227,55 +179,108 @@
      slide)))
 
 
+; ------ Slides ------------
 
-(defn data-types []
-  (let [title "#clojure as Lisp - data types"
-        text (pretty '{:string "The author of Clojure is Rich Hickey"
-                       :keyword :first-release
-                       :integer 20090504
-                       :vector ["used extensively", 123, ["nested"]]
-                       :list  ("are you list?", true, false)
-                       :set {"Heed", 3.1}
-                       :function (fn [x y]
-                                   (if (<= x y)
-                                     y
-                                     x))
-                       :map {:key "value",
-                             "key" :value}})]
-    (code-slide title text)))
+                                        ;---- lisp  -----
+                                        ; macro with debug
+                                        ; macro, functional style, high order, loops, code as data, lists, Dynamic polymorphism
 
 
+(defn clojure []
+  (let [title "#clojure"
+        text (markdown (bullets ["modern Lisp dialect, on the JVM"
+                                 "immutable persistent data structures"
+                                 "built-in support in concurrency (no locks)"
+                                 "created by Rich Hickey"
+                                 ]))]
+    (simple-slide title text)))
 
-
+(defn why-clojure []
+  (let [title "#why clojure?"
+        text (markdown (bullets ["functional"
+                                 "code as data (as code)"
+                                 "enables high level of abstraction"
+                                 "distinctive approuch to State, Identity and Time"
+                                 "(almost) no syntax"
+                                 ]))]
+    (simple-slide title text)))
 
 (defn why-functional []
   (let [title "#why functional?"
-        text (markdown (bullets ["program as a chain of transformations"
-                                 "composable"
-                                 "testable"
+        text (markdown (bullets ["program as a chain of transformations "
+                                 "composable (thus testable) \n * _Design is to take things apart in such a way that they can be put back together_ - R.H"
                                  "even better - can reason about"
-                                 "_Design is to take things apart in such a way that they can be put back together_ - R.H"
                                  ]))]
     (simple-slide title text)))
 
 (defn functional-programming []
   (let [title "#functional  programming"
         text (markdown (bullets ["rooted in the theoretical framework of λ-calculus"
+                                 "alternative to the imperative approuch of von-Neumann architecture (OOP)"
                                  "can simulate any stateful Turing machine"
-                                 "building blocks \n * functions (preferably pure) \n * (mostly) immtuable data"]))]
+                                 "building blocks: \n * functions (preferably pure) \n * (mostly) immutable data"]))]
     (simple-slide title text)))
 
-(let [res (markdown (nested-bullets ["rooted"
-                                     "subblock" ["testing" "another"]
-                                     "tejej"]))]
-  (println res))
-(defn pure-funcitons []
-  (let [title "#pure"
-        text (markdown (bullets ["rooted in the theoretical framework of λ-calculus"
-                                 "can simulate any statful Turing machine"
-                                 "buliding blocks - pure functions"
-                                 ]))]
-    (simple-slide title text)))
+
+(defn warmup []
+  (let [title "#(warmup)"
+        text (pretty '(let [a-str "Bothers and Sisters"
+                            a-keyword :first-release
+                            an-int  20090504
+                            a-vec  ["used extensively", 123, ["nested"]]
+                            a-list  ("are you list?", true, false)
+                            a-set {"Heed", 3.1}
+                            a-func (fn [x y]
+                                      (if (<= x y)
+                                        y
+                                        x))
+                            a-map {:key "value",
+                                    "key" :value}])
+                     )]
+    (code-slide title text)))
+
+(println (let [crts [{:type "dog" :human-friendly [100, 1000]}
+                             {:type "cat" :human-friendly [-32, 9]}
+                             {:type "homosapien" :human-friendly [-1000, 5.7]}]
+                       friendliness (fn [[mi ma]] (+ ma mi))
+                       cosmological-const 42
+                       friendly? (fn [crt] (<= cosmological-const
+                                               (friendliness (:human-friendly crt))))]
+                   (->> crts
+                        (filter friendly?)
+                        (map (fn [crt] (crt :type))))))
+(defn warmup-2 []
+  (let [title "#(warmup 2)"
+        text (pretty (let [crts [{:type "dog" :human-friendly [100, 1000]}
+                                  {:type "cat" :human-friendly [-32, 9]}
+                                  {:type "homosapien" :human-friendly [-1000, 5.7]}]
+                            friendliness (fn [[mi ma]] (+ ma mi))
+                            cosmological-const 42
+                            friendly? (fn [crt] (<= cosmological-const
+                                                    (friendliness (:human-friendly crt))))]
+                        (->> crts
+                             (filter friendly?)
+                             (map (fn [crt] (crt :type)))))
+                     )]
+    (code-slide title text)))
+
+(defn warmup-3 []
+  (let [title "#(warmup 3)"
+        text (pretty '(((fn [f]
+                          (f f))
+                        (fn [f]
+                          (fn [vec]
+                            (if (= 1 (count vec))
+                              (first vec)
+                              (let [x (first vec)
+                                    y ((f f) (rest vec))]
+                                (if (<= x y)
+                                  y
+                                  x))))))
+                       [12 3 93 8 1 0 -1 2018 4.4])
+                     )]
+    (code-slide title text)))
+
 ; ------ Examples --------
 
 (defn read [s]
@@ -290,8 +295,6 @@
                    :source-map true
                    :context    :expr}
                   identity)]
-    (println "eval-raw:  " s)
-    (println "eval: " res)
     res))
 
 (defn render-code [this]
@@ -352,7 +355,13 @@
      (simple-slide title
                    body))))
 
-(def slides [clojure, why-clojure, why-functional, functional-programming, data-types])
+(def slides [clojure
+             why-clojure
+             why-functional
+             functional-programming
+             warmup
+             warmup-2
+             warmup-3])
 
 (defn slide []
   (fn []
@@ -391,7 +400,6 @@
                    #(put! event-ch (extract-key %)))
     event-ch))
 
-
 (let [input (listen-to-keyboard)]
   (go-loop []
     (let [key (<! input)
@@ -400,6 +408,8 @@
       (cond (= key right) (next! app-state slides)
             (= key left) (prev! app-state slides)))
     (recur)))
+
+
 
 (defn on-js-reload []
 
