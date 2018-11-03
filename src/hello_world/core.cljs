@@ -245,11 +245,7 @@
     (code-slide title text)))
 
 
-(defn code-debug []
-  (let [title "#clojure as Lisp - functional programming"
-        comment (str (char 59) "tes)comment")
-        text (pretty comment)]
-    (code-slide title text)))
+
 
 
 (defn why-functional []
@@ -356,7 +352,7 @@
      (simple-slide title
                    body))))
 
-(def slides [clojure, why-clojure, why-functional, functional-programming, data-types, code-debug])
+(def slides [clojure, why-clojure, why-functional, functional-programming, data-types])
 
 (defn slide []
   (fn []
