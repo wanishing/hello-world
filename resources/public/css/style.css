@@ -55,6 +55,15 @@
         /*background-color: #EBEBEB;*/
 }
 
+ul {
+    margin: 0;
+    padding: 0;/*
+    overflow: hidden;*/
+}
+
+li {
+    margin: 20px 40px;
+}
 .code-slide {
     font-size: 35px;
     padding: 80px;
