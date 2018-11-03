@@ -273,9 +273,9 @@
     (simple-slide title
                   body)))
 
-; ------ Slides ------------
+;; ------ Slides ------------
 
-                                        ;---- lisp  -----
+                             ;;---- lisp  -----
                                         ; macro with debug
                                         ; macro, functional style, high order, loops, code as data, lists, Dynamic polymorphism
 
@@ -300,9 +300,11 @@
 
 (defn why-functional []
   (let [title "#why functional?"
-        text (markdown (bullets ["program as a chain of transformations "
-                                 "composable (thus testable) \n * _Design is to take things apart in such a way that they can be put back together_ - R.H"
-                                 "even better - can reason about"
+        text (markdown (bullets ["program as a chain of transformations on values"
+                                 "easier to reason about"
+                                 "easier to understand"
+                                 "less mechanical, more mathematical"
+                                 "composable \n * _Design is to take things apart in such a way that they can be put back together_ - R.H"
                                  ]))]
     (simple-slide title text)))
 
@@ -311,7 +313,7 @@
         text (markdown (bullets ["rooted in the theoretical framework of λ-calculus"
                                  "alternative to the imperative approuch of von-Neumann architecture (OOP)"
                                  "can simulate any stateful Turing machine"
-                                 "building blocks: \n * functions (preferably pure) \n * (mostly) immutable data"]))]
+                                 "building blocks \n * functions (preferably pure) \n * (mostly) immutable data"]))]
     (simple-slide title text)))
 
 
@@ -354,18 +356,30 @@
         text (pretty '(((fn [f]
                           (f f))
                         (fn [f]
-                          (fn [vec]
-                            (if (= 1 (count vec))
-                              (first vec)
-                              (let [x (first vec)
-                                    y ((f f) (rest vec))]
-                                (if (<= x y)
-p                                  y
-                                  x))))))
+                          (fn [v]
+                            (if (= 1 (count v))
+                              (first v)
+                              (max (first v) ((f f) (rest v)))))))
                        [12 3 93 8 1 0 -1 2018 4.4])
                      )]
     (code-slide title text)))
 
+
+(defn why-functional-2 []
+  (let [title "#why functional? #2"
+        text (markdown (bullets ["given a set of arguments, the program will always return exactly the same result \n * pure functions + immutable data - side-effects = referential transparency"
+                                 "testable \n * function acts locally"
+                                 "in concurrent environment - non-issue"
+                                 ]))]
+    (simple-slide title text)))
+
+(defn state-value-identity []
+  (let [title "# defenitions"
+        text (markdown (bullets ["Value"
+                                 "State"
+                                 "Identity"
+                                 ]))]
+    (simple-slide title text)))
 
 ; ------ Examples --------
 
@@ -376,7 +390,8 @@ p                                  y
              warmup
              warmup-2
              warmup-3
-             ])
+             why-functional-2
+             state-value-identity])
 
 (defn slide []
   (fn []
