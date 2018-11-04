@@ -321,7 +321,7 @@
   (let [title "#(warmup)"
         text (pretty '(let [a-str "Bothers and Sisters"
                             a-keyword :first-release
-                            an-int  20090504
+                            a-number  20090504
                             a-vec  ["used extensively", 123, ["nested"]]
                             a-list  ("are you list?", true, false)
                             a-set {"Heed", 3.1}
@@ -373,13 +373,39 @@
                                  ]))]
     (simple-slide title text)))
 
-(defn state-value-identity []
-  (let [title "# defenitions"
-        text (markdown (bullets ["Value"
-                                 "State"
-                                 "Identity"
+(defn model-value []
+  (let [title "# clojure model - Value"
+        text (markdown (bullets ["a magnitude, quantity, or number"
+                                 "observable"
+                                 "comparable"
+                                 "values aggregate to value (42, [42])"
+                                 "**never** changes"
                                  ]))]
     (simple-slide title text)))
+
+(defn model-state-identity []
+  (let [title "# clojure model - Identity and State"
+        text (markdown (bullets ["Identity \n * a logical entity associated with a series of different values _over time_"
+                                 "State \n *  a value associated with some identity at a point in time"
+                                 ]))]
+    (simple-slide title text)))
+
+(defn model-oop []
+  (let [title "# OOP model"
+        text (markdown (bullets ["Value \n * a magnitude, quantity, or number \n * observable \n * comparable \n * values aggregate to value (42, [42])"
+                                 "Identity \n * a logical entity associated with a series of different states"
+                                 ]))]
+    (simple-slide title text)))
+;; glorified maps, new spaghety code, expolsion of code, over specificed, no reuse, in concurrency stop the world and time
+(defn why-not-oop []
+  (let [title "#why not OOP?"
+        text (markdown (bullets ["couples "
+                                 ]))]
+    (simple-slide title text)))
+
+
+
+
 
 ; ------ Examples --------
 
@@ -391,7 +417,8 @@
              warmup-2
              warmup-3
              why-functional-2
-             state-value-identity])
+             model-value
+             model-state-identity])
 
 (defn slide []
   (fn []
