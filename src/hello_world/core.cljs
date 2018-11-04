@@ -66,7 +66,16 @@
 
 (defonce app-state (atom {:current 0}))
 
-(comment "macro,functional, presistent data structure immutabillity, concurrency, lisp, jvm, polymorphism")
+(defn next! [atom coll]
+  (let [cyclic-inc #(mod (inc %) (count coll))]
+    (swap! atom update-in [:current] cyclic-inc)))
+
+(defn prev! [atom coll]
+  (let [cyclic-dec #(mod (dec %) (count coll))]
+    (swap! atom update-in [:current] cyclic-dec)))
+
+(defn set-slide! [i]
+  (swap! app-state assoc :current i))
 
 (defn markdown [text]
   (->> text
@@ -115,17 +124,6 @@
 (defn simple-slide [title body]
   (naked-slide title (with-style body "slide")))
 
-(defn next! [atom coll]
-  (let [cyclic-inc #(mod (inc %) (count coll))]
-    (swap! atom update-in [:current] cyclic-inc)))
-
-(defn prev! [atom coll]
-  (let [cyclic-dec #(mod (dec %) (count coll))]
-    (swap! atom update-in [:current] cyclic-dec)))
-
-(defn set-slide! [i]
-  (swap! app-state assoc :current i))
-
 (defn pretty [s]
   (p/with-pprint-dispatch
     p/code-dispatch
@@ -155,28 +153,6 @@
                     (reset! content (.. % -target -value)))
       :value initial}]))
 
-(defn repl-card [input]
-  (fn []
-    [:textarea
-     {:value @input
-      :rows 1000
-      :auto-complete "off"
-      :on-change #(reset! input (.getValue %))}]))
-
-(defn editor-did-mount [input]
-  (fn [this]
-    (let [cm (.fromTextArea  js/CodeMirror
-                             (reagent/dom-node this)
-                             #js {:mode "clojure"
-                                  :lineNumbers true})]
-      (.on cm "change" #(reset! input (.getValue %))))))
-
-(defn editor-ui [input]
-  (reagent/create-class
-   {:render (fn []
-              [repl-card input])
-    :component-did-mount (editor-did-mount input)}))
-
 (defn code-ui [input]
   (reagent/create-class
    {:render (fn []
@@ -195,92 +171,8 @@
                      title
                      body)]
      slide)))
-
-(defn read [s]
-  (let [ss s]
-  (read-string ss)))
-
-
-(defn eval-expr [s]
-  (let [res (eval (empty-state)
-                  (read s)
-                  {:eval       js-eval
-                   :source-map true
-                   :context    :expr}
-                  identity)]
-    res))
-
-(defn render-code [this]
-  (->> this reagent/dom-node (.highlightBlock js/hljs)))
-
-(defn result-ui [output]
-  (reagent/create-class
-   {:render (fn []
-              [:div {:class "result"}
-               [:pre>code.clj
-                (if-let [output (get @output :value)]
-                  (prn-str output)
-                  "")]])
-    :component-did-mouth render-code}))
-
-
-(defn repl
-  ([]
-   (repl "#repl" nil))
-  ([title initial]
-   (let [input (atom initial)
-         output (atom nil)
-         editor (editor-ui input)
-         eval-btn (fn []
-                    [:button {:class "eval"
-                              :on-click #(reset! output (eval-expr @input))}])
-         result (result-ui output)
-         columns (fn [& args]
-                   (for [[key, arg] (map-indexed vector args)]
-                     [:td {:key key}
-                      [arg]]))
-         body [:table
-               [:tbody
-                [:tr
-                 (columns editor eval-btn result)]]]]
-     (simple-slide title
-                   body))))
-
-
-(defn repl-slide [title initial]
-  (let [input (atom initial)
-        output (atom nil)
-        editor (editor-ui input)
-        eval-btn (fn []
-                   [:button {:class "eval"
-                             :on-click #(reset! output (eval-expr @input))}])
-        result (result-ui output)
-        rows (fn [& args]
-                  (for [[key, arg] (map-indexed vector args)]
-                    [:td {:key key
-                          :height "100"}
-                     [arg]]))
-        body [:table
-              [:tbody
-               [:tr
-                (rows editor eval-btn result)]]]]
-    (simple-slide title
-                  body)))
-
-;; ------ Slides ------------
-
-                             ;;---- lisp  -----
-                                        ; macro with debug
-                                        ; macro, functional style, high order, loops, code as data, lists, Dynamic polymorphism
-
-(defn clojure []
-  (let [title "#clojure"
-        text (markdown (bullets ["modern Lisp dialect, on the JVM"
-                                 "immutable persistent data structures"
-                                 "built-in support in concurrency (no locks)"
-                                 "created by Rich Hickey"
-                                 ]))]
-    (simple-slide title text)))
+;; Slides
+(comment "macro,functional, presistent data structure immutabillity, concurrency, lisp, jvm, polymorphism")
 
 (defn why-clojure []
   (let [title "#why clojure?"
@@ -341,9 +233,7 @@
                              (filter friendly?)
                              (map (fn [crt] (crt :type)))))
                      )]
-    (println (type text))
     (code-slide title text)))
-
 
 (defn warmup-3 []
   (let [title "#(warmup 3)"
@@ -357,7 +247,6 @@
                        [12 3 93 8 1 0 -1 2018 4.4])
                      )]
     (code-slide title text)))
-
 
 (defn why-functional-2 []
   (let [title "#why functional? #2"
@@ -405,11 +294,11 @@
 (defn clojure-view []
   (let [title "# in clojure"
         text (markdown (bullets ["**all** data structures are immutable and persistent \n * structual sharing"
-                                 "**explicit** semantics for handling state via Refs and Agents"
+                                 "explicit semantics for handling state via Refs and Agents"
                                  ]))]
     (simple-slide title text)))
 
-(def slides [clojure
+(def slides [
              why-clojure
              why-functional
              functional-programming
@@ -436,7 +325,7 @@
   [:div {:class "dot-container"}
    (for [i (range (count slides))]
      [:span {:class "dot"
-          :key (str i)
+             :key (str i)
              :onClick #(set-slide! i)}])]])
 
 
@@ -469,11 +358,4 @@
             (= key left) (prev! app-state slides)))
     (recur)))
 
-
-
-(defn on-js-reload []
-
-  ;; optionally touch your app-state to force rerendering depending on
-  ;; your application
-  ;; (swap! app-state update-in [:__figwheel_counter] inc)
-  )
+(defn on-js-reload [])
