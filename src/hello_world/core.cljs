@@ -67,7 +67,7 @@
     p/code-dispatch
     (with-out-str (p/pprint s))))
 
-;-- code componenet
+;-- Code component
 (defn count-newlines [a]
   (reagent/track (fn []
                    (count (re-seq #"\n" @a)))))
@@ -109,6 +109,7 @@
                      title
                      body)]
      slide)))
+
 ;; Slides
 (comment "macro,functional, presistent data structure immutabillity, concurrency, lisp, jvm, polymorphism")
 
@@ -236,8 +237,7 @@
                                  ]))]
     (simple-slide title text)))
 
-(def slides [
-             why-clojure
+(def slides [why-clojure
              why-functional
              functional-programming
              warmup
@@ -269,6 +269,7 @@
 
 (reagent/render-component [main-container]
                           (. js/document (getElementById "app")))
+;; navigation support
 
 (def keyboard-events
     (.-KEYDOWN events/EventType))
