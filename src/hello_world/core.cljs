@@ -13,57 +13,6 @@
 
 (enable-console-print!)
 
-(def css-path (str "/Users/talwanich/clojurescript/hello-world/resources/public/css/style.css"))
-
-(def styles
-  (let [slideshow-container (css [:.slideshow-container {
-                                                       :postition "relative"
-                                                       :background "#f1f1f1f1"}])
-        slide (css [:.slide { :padding "80px"
-                             :text-align "center"}])
-        next-prev (css [:.prev :.next {:cursor "pointer"
-                                       :position "absolute"
-                                       :top "50%"
-                                       :width "auto"
-                                       :margin-top "-30px"
-                                       :padding "16px"
-                                       :color "#888"
-                                       :font-weight "bold"
-                                       :font-size "20px"
-                                       :border-radius "0 3px 3px 0"
-                                       :user-select "none"}])
-        next-position (css [:.next {:position "absolute"
-                                    :right 0
-                                    :border-radius "3px 0 0 3px"}])
-        on-hover (css [:.prev:hover :.next:hover
-                       {:background-color "rgba(0,0,0,0.8)"
-                        :color "white"}])
-        dot-container (css [:.dot-container {:text-align "center"
-                                             :padding "20px"
-                                             :background "#ddd"}])
-        dot (css [:.dot {:cursor "pointer"
-                         :height "15px"
-                         :width "15px"
-                         :margin "0 2px"
-                         :background-color "#bbb"
-                         :broder-radius "50%"
-                         :display "inline-block"
-                         :transition "background-color 0.6s ease"}])
-        active-dot (css [:.active :.dot:hover {:background-color "#717171"}])
-        quote (css [:.q {:font-style "italic"}])
-        author (css [:.author {:color "cornflowerblue"}])]
-    (string/join [slideshow-container
-                  slide
-                  next-prev
-                  next-position
-                  on-hover
-                  dot-container
-                  dot
-                  active-dot
-                  quote
-                  author])))
-
-
 (defonce app-state (atom {:current 0}))
 
 (defn next! [atom coll]
