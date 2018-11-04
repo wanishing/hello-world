@@ -113,6 +113,15 @@
 ;; Slides
 (comment "macro,functional, presistent data structure immutabillity, concurrency, lisp, jvm, polymorphism")
 
+(defn clojure []
+  (let [title "#clojure"
+        text (markdown (bullets ["modern Lisp dialect, on the JVM"
+                                 "immutable persistent data structures"
+                                 "built-in support in concurrency (no locks)"
+                                 "created by Rich Hickey"
+                                 ]))]
+    (simple-slide title text)))
+
 (defn why-clojure []
   (let [title "#why clojure?"
         text (markdown (bullets ["functional"
@@ -237,7 +246,8 @@
                                  ]))]
     (simple-slide title text)))
 
-(def slides [why-clojure
+(def slides [clojure
+             why-clojure
              why-functional
              functional-programming
              warmup
