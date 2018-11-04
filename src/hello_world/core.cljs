@@ -390,22 +390,14 @@
                                  ]))]
     (simple-slide title text)))
 
-(defn model-oop []
-  (let [title "# OOP model"
-        text (markdown (bullets ["Value \n * a magnitude, quantity, or number \n * observable \n * comparable \n * values aggregate to value (42, [42])"
-                                 "Identity \n * a logical entity associated with a series of different states"
+(defn why-not-oop []
+  (let [title "# why not OOP?"
+        text (markdown (bullets ["couples _state_ with _identity_ \n * an object is a pointer to a memory that contains its state"
+                                 "couples _state_ with _behavior \n * an object is also a set of methods that manipulate its state"
+                                 "couples _state_ with _behavi_"
                                  ]))]
     (simple-slide title text)))
 ;; glorified maps, new spaghety code, expolsion of code, over specificed, no reuse, in concurrency stop the world and time
-(defn why-not-oop []
-  (let [title "#why not OOP?"
-        text (markdown (bullets ["couples "
-                                 ]))]
-    (simple-slide title text)))
-
-
-
-
 
 ; ------ Examples --------
 
@@ -418,7 +410,8 @@
              warmup-3
              why-functional-2
              model-value
-             model-state-identity])
+             model-state-identity
+             why-not-oop])
 
 (defn slide []
   (fn []
