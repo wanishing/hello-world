@@ -68,13 +68,10 @@
 
 (comment "macro,functional, presistent data structure immutabillity, concurrency, lisp, jvm, polymorphism")
 
-
 (defn markdown [text]
   (->> text
        (m/md->hiccup)
        (m/component)))
-
-
 
 (defn bullets [args]
   (loop [args args
@@ -83,7 +80,6 @@
       (if (empty? args)
         acc
         (recur (rest args) (string/join seperator [acc (first args)]))))))
-
 
 (defn markdown-code [code]
   (let []
@@ -115,8 +111,6 @@
      (conj container
            dom-title
            body))))
-
-
 
 (defn simple-slide [title body]
   (naked-slide title (with-style body "slide")))
@@ -400,15 +394,20 @@
 
 (defn why-not-oop-2 []
   (let [title "# why not OOP? #2"
-        text (markdown (bullets ["couples state with identity \n * an object is a pointer to a memory that contains its state"
-                                 "couples state with behavior \n * an object is also a set of methods that manipulate its state"
-                                 "couples read with write \n * impossible to observe an object without blocking others from changing it"
+        text (markdown (bullets ["most objects are just fancy maps \n * but with personal language (.getFighterId())"
+                                 "over-specified \n * new thing - new class"
+                                 "no reuse"
+                                 "explosion of code"
+                                 "synchronization nightmare"
                                  ]))]
     (simple-slide title text)))
 
-;; glorified maps, new spaghety code, expolsion of code, over specificed, no reuse, in concurrency stop the world and time
-
-; ------ Examples --------
+(defn clojure-view []
+  (let [title "# in clojure"
+        text (markdown (bullets ["**all** data structures are immutable and persistent \n * structual sharing"
+                                 "**explicit** semantics for handling state via Refs and Agents"
+                                 ]))]
+    (simple-slide title text)))
 
 (def slides [clojure
              why-clojure
@@ -420,7 +419,9 @@
              why-functional-2
              model-value
              model-state-identity
-             why-not-oop])
+             why-not-oop
+             why-not-oop-2
+             clojure-view])
 
 (defn slide []
   (fn []
