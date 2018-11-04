@@ -39,17 +39,6 @@
         acc
         (recur (rest args) (string/join seperator [acc (first args)]))))))
 
-(defn markdown-code [code]
-  (let []
-    (->> code
-         (markdown))))
-
-(defn code-block [code]
-  [:pre {}
-   [:code {:class "language-clojure"
-           :data-lang "clojure"}
-    (prn-str code)]])
-
 (defn with-style [dom style]
   (let [div [:div {:class (str style)}]]
     (if (= :div (nth dom 0))
