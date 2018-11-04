@@ -374,7 +374,7 @@
     (simple-slide title text)))
 
 (defn model-value []
-  (let [title "# clojure model - Value"
+  (let [title "# Value"
         text (markdown (bullets ["a magnitude, quantity, or number"
                                  "observable"
                                  "comparable"
@@ -384,7 +384,7 @@
     (simple-slide title text)))
 
 (defn model-state-identity []
-  (let [title "# clojure model - Identity and State"
+  (let [title "# Identity and State"
         text (markdown (bullets ["Identity \n * a logical entity associated with a series of different values _over time_"
                                  "State \n *  a value associated with some identity at a point in time"
                                  ]))]
@@ -392,11 +392,20 @@
 
 (defn why-not-oop []
   (let [title "# why not OOP?"
-        text (markdown (bullets ["couples _state_ with _identity_ \n * an object is a pointer to a memory that contains its state"
-                                 "couples _state_ with _behavior \n * an object is also a set of methods that manipulate its state"
-                                 "couples _state_ with _behavi_"
+        text (markdown (bullets ["couples state with identity \n * an object is a pointer to a memory that contains its state"
+                                 "couples state with behavior \n * an object is also a set of methods that manipulate its state"
+                                 "couples read with write \n * impossible to observe an object without blocking others from changing it \n * _The hidden premise of imperative program: the world is stopped while you look at or change it_ - R.H"
                                  ]))]
     (simple-slide title text)))
+
+(defn why-not-oop-2 []
+  (let [title "# why not OOP? #2"
+        text (markdown (bullets ["couples state with identity \n * an object is a pointer to a memory that contains its state"
+                                 "couples state with behavior \n * an object is also a set of methods that manipulate its state"
+                                 "couples read with write \n * impossible to observe an object without blocking others from changing it"
+                                 ]))]
+    (simple-slide title text)))
+
 ;; glorified maps, new spaghety code, expolsion of code, over specificed, no reuse, in concurrency stop the world and time
 
 ; ------ Examples --------
