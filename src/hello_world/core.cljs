@@ -116,8 +116,8 @@
 
 (defn vector-of-content []
   (let [title "# vector of content"
-        text (pretty '(def slides [vector-of-content
-                                   on-clojure
+        text (pretty '(def slides [on-clojure
+                                   vector-of-content
                                    why-clojure
                                    on-state-and-complexity
                                    why-functional
@@ -410,11 +410,12 @@
   (let [title "# .clj"
         text (markdown (bullets ["[https://clojure.org/index](https://clojure.org/index)"
                                  "Rich Hickey on Youtube\n * Clojure Made Simple \n * The Value of Values \n * Clojure Concurrency"
-                                 "Books \n * The Joy of Clojure \n * Clojure for the Brave and True"]))]
+                                 "Books \n * The Joy of Clojure \n * Clojure for the Brave and True"
+                                 "Thanks for listening!"]))]
     (simple-slide title text)))
 
-(def slides [vector-of-content
-             on-clojure
+(def slides [on-clojure
+             vector-of-content
              why-clojure
              on-state-and-complexity
              why-functional
