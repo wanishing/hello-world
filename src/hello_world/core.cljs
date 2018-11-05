@@ -113,11 +113,35 @@
      slide)))
 
 ;; Slides
-(comment "links and resources, macro, polymorphism")
 
 (defn vector-of-content []
   (let [title "# vector of content"
-        text (pretty '("tbd"))]
+        text (pretty '(def slides [vector-of-content, on-clojure
+                                   why-clojure
+                                   on-state-and-complexity
+                                   why-functional
+                                   functional-programming
+                                   warmup
+                                   warmup-2
+                                   warmup-3
+                                   why-functional-2
+                                   clj-value-model
+                                   clj-state-and-identity-model
+                                   why-not-oop
+                                   why-not-oop-2
+                                   clojure-working-model
+                                   clojure-working-model-2
+                                   the-m-word
+                                   the-semantics-of-mutation
+                                   persistency-and-immutability
+                                   the-magic-of-macros
+                                   macro-example
+                                   macro-example-2
+                                   macro-example-3
+                                   runtime-polymorphism
+                                   multimethod-polymorphism
+                                   protocol-polymorphism
+                                   questions?]))]
     (code-slide title text)))
 
 (defn on-clojure []
@@ -310,11 +334,83 @@
   (let [title "# defmacro"
         text (markdown (bullets ["macros are functions called in compile time to perform transformations of code"
                                  "clojure extends the lispy notion of code-as-data to maps and vectors"
-                                 "Use cases \n * abstraction \n * control flow \n * reduce boilerplate \n * "
+                                 "Use cases \n * syntacticabstraction (DSL) \n * control flow \n * reduce boilerplate \n * create binding forms (let) \n * . \n * .. \n * ... \n * the power is in your hands"
                                  ]))]
     (simple-slide title text)))
 
+(defn macro-example []
+  (let [title "# macro example"
+        text "(defmacro safe [body]
+  `(try ~body
+        (catch Exception e#
+          (str \"caught exception: \" (.getMessage e#)))))
 
+(safe (/ 4 2))
+
+(safe (/ 1 0))
+
+(safe (+ 1 \"some string\"))"]
+    (code-slide title text)))
+
+(defn macro-example-2 []
+  (let [title "# macro example #2"
+        text "(defmacro def-watched [name & value]
+  `(do
+     (def ~name ~@value)
+     (add-watch (var ~name)
+                :re-bind
+                (fn [~'key ~'r old# new#]
+                  (println old# \" -> \" new#)))))
+(def-watched x 2)
+
+(def x 3)"]
+    (code-slide title text)))
+
+(defn macro-example-3 []
+  (let [title "# and many more"
+        text (markdown (bullets ["Branching \n *  and, or, when, when-not, when-let, when-first, if-not, if-let, cond, condp"
+                                 "Looping \n * for, doseq, dotimes, while"
+                                 "Dynamic scopes \n *  binding, locking, time, with-open"
+                                 ]))]
+    (simple-slide title text)))
+
+(defn runtime-polymorphism []
+  (let [title "# polymorphism in clojure"
+        text (markdown (bullets ["polymorphism is the ability of a function to have different definitions depending on the type of the target object"
+                                 "clojure way \n * single function designator dispatches to multiple independently-defined functions based upon some value of the call \n * using protocols to define function signature"
+                                 ]))]
+    (simple-slide title text)))
+
+(defn multimethod-polymorphism []
+  (let [title "# defmulti"
+        text (pretty '(defmulti handle-op (fn [data]
+                                           (:op data)))
+
+                     '(defmethod handle-op :update-aep [{:keys [args]}])
+
+                     '(defmethod handle-op :update-audio [{:keys [args]}])
+
+                     '(defmethod handle-op :update-metadata [{:keys [args]}]))]
+    (code-slide title text)))
+
+(defn protocol-polymorphism []
+  (let [title "# defprotocol"
+        text (pretty '(defprotocol Concatenatable
+                        (cat [this other]))
+
+                     '(extend-type String
+                        Concatenatable
+                        (cat [this other]
+                          (.concat this other)))
+                     '(cat "House of" "Cards"))]
+    (code-slide title text)))
+
+(defn questions? []
+  (let [title "# .clj"
+        text (markdown (bullets ["[https://clojure.org/index](https://clojure.org/index)"
+                                 "Rich Hickey on Youtube\n * Clojure Made Simple \n * The Value of Values \n * Clojure Concurrency"
+                                 "Books \n * The Joy of Clojure \n * Clojure for the Brave and True"]))]
+    (simple-slide title text)))
 
 (def slides [vector-of-content
              on-clojure
@@ -335,7 +431,17 @@
              the-m-word
              the-semantics-of-mutation
              persistency-and-immutability
-             the-magic-of-macros])
+             the-magic-of-macros
+             macro-example
+             macro-example-2
+             macro-example-3
+             runtime-polymorphism
+             multimethod-polymorphism
+             protocol-polymorphism
+             questions?])
+
+
+
 
 (defn slide []
   (fn []
