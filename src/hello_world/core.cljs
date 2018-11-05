@@ -115,9 +115,13 @@
 ;; Slides
 (comment "links and resources, macro, polymorphism")
 
+(defn vector-of-content []
+  (let [title "# vector of content"
+        text (pretty '("tbd"))]
+    (code-slide title text)))
 
-(defn clojure []
-  (let [title "#clojure"
+(defn on-clojure []
+  (let [title "# clojure"
         text (markdown (bullets ["modern Lisp dialect, on the JVM"
                                  "immutable persistent data structures"
                                  "built-in support in concurrency"
@@ -214,7 +218,7 @@
                                  ]))]
     (simple-slide title text)))
 
-(defn model-value []
+(defn clj-value-model []
   (let [title "# Value"
         text (markdown (bullets ["a magnitude, quantity, or number"
                                  "observable"
@@ -224,7 +228,7 @@
                                  ]))]
     (simple-slide title text)))
 
-(defn model-state-identity []
+(defn clj-state-and-identity-model []
   (let [title "# Identity and State"
         text (markdown (bullets ["Identity \n * a logical entity associated with a series of different values over time"
                                  "State \n *  a value associated with some identity at a point in time"
@@ -250,15 +254,15 @@
                                  ]))]
     (simple-slide title text)))
 
-(defn clojure-model []
-  (let [title "# clojure model"
+(defn clojure-working-model []
+  (let [title "# clojure working model"
         text (markdown (bullets ["all data structures are immutable"
                                  "explicit semantics for handling state \n * via Refs and Agents"
                                  "decouples state from identity \n * identity _has_ state \n * identity can be associated with different states at different times \n * but the state _itself_ does not change "
                                  ]))]
     (simple-slide title text)))
 
-(defn clojure-model-2 []
+(defn clojure-working-model-2 []
   (let [title "# clojure model #2"
         text (markdown (bullets ["changes to references are coordinated by the system \n * enforced \n * consistent view of the world \n * the time never stops (no locks!)"
                                  "the value of a reference (state of identity) is always \n * visible \n *  shareable"
@@ -267,8 +271,8 @@
                                  ]))]
     (simple-slide title text)))
 
-(defn clojure-mutation []
-  (let [title "# clojure mutation"
+(defn the-m-word []
+  (let [title "# the m word"
         text (markdown (bullets ["the only mutable type is Refs"
                                  "mutations are done within a transaction"
                                  "atomic \n * every changppe made within a transaction occurs or none do"
@@ -277,18 +281,23 @@
                                  ]))]
     (simple-slide title text)))
 
-(defn mutaion-semantics []
-  (let [title "# mutation semantics"
+(defn the-semantics-of-mutation []
+  (let [title "# the semantics of mutation"
         text (pretty '(defonce app-state (atom {:current 0}))
                      '(defn next! [r coll]
                         (let [cyclic-inc #(mod (inc %) (count coll))]
                           (swap! r update-in [:current] cyclic-inc)))
                      '(defn prev! [r coll]
                         (let [cyclic-dec #(mod (dec %) (count coll))]
-                          (swap! r update-in [:current] cyclic-dec))))]
+                          (swap! r update-in [:current] cyclic-dec)))
+                     '(defn slide []
+                        (fn []
+                          (let [i (get @app-state :current)
+                                current (get slides i)]
+                            [current]))))]
     (code-slide title text)))
 
-(defn persistent-immutable-ds []
+(defn persistency-and-immutability []
   (let [title "# (), #{}, {}, []"
         text (markdown (bullets [
                                  "immutability \n * when change occurs, new version of the data structure is created"
@@ -297,9 +306,18 @@
                                  ]))]
     (simple-slide title text)))
 
+(defn the-magic-of-macros []
+  (let [title "# defmacro"
+        text (markdown (bullets ["macros are functions called in compile time to perform transformations of code"
+                                 "clojure extends the lispy notion of code-as-data to maps and vectors"
+                                 "Use cases \n * abstraction \n * control flow \n * reduce boilerplate \n * "
+                                 ]))]
+    (simple-slide title text)))
 
 
-(def slides [clojure
+
+(def slides [vector-of-content
+             on-clojure
              why-clojure
              on-state-and-complexity
              why-functional
@@ -308,21 +326,21 @@
              warmup-2
              warmup-3
              why-functional-2
-             model-value
-             model-state-identity
+             clj-value-model
+             clj-state-and-identity-model
              why-not-oop
              why-not-oop-2
-             clojure-model
-             clojure-model-2
-             clojure-mutation
-             mutaion-semantics
-             persistent-immutable-ds])
+             clojure-working-model
+             clojure-working-model-2
+             the-m-word
+             the-semantics-of-mutation
+             persistency-and-immutability
+             the-magic-of-macros])
 
 (defn slide []
   (fn []
     (let [i (get @app-state :current)
           current (get slides i)]
-      (.log js/console (str "current slide: " i))
       [current])))
 
 (defn main-container []
