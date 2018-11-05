@@ -113,7 +113,8 @@
      slide)))
 
 ;; Slides
-(comment "slide on complexity, links and resources, macro,functional, presistent data structure immutabillity, concurrency, lisp, jvm, polymorphism")
+(comment "links and resources, macro, polymorphism")
+
 
 (defn clojure []
   (let [title "#clojure"
@@ -134,6 +135,12 @@
                                  ]))]
     (simple-slide title text)))
 
+(defn on-state-and-complexity []
+  (let [title "# state and complexity"
+        text (markdown (bullets ["Anyone who has ever telephoned a support desk for a software system and been told to “try it again”, or “reload the document”, or “restart the program”, or “reboot your computer” or “re-install the program” or even “re- install the operating system and then the program” has direct experience of the problems that state causes for writing reliable, understandable software - _Out of the Tar Pit, Moseley and Marks_"
+                                 "computers have very large numbers of states. This makes conceiving, describing, and testing them hard. Software systems have orders-of-magnitude more states than computers do - _Brooks_"]))]
+    (simple-slide title text))  )
+
 (defn why-functional []
   (let [title "#why functional?"
         text (markdown (bullets ["program as a chain of transformations on values"
@@ -143,6 +150,7 @@
                                  "composable \n * _Design is to take things apart in such a way that they can be put back together_ - R.H"
                                  ]))]
     (simple-slide title text)))
+
 
 (defn functional-programming []
   (let [title "#functional  programming"
@@ -293,6 +301,7 @@
 
 (def slides [clojure
              why-clojure
+             on-state-and-complexity
              why-functional
              functional-programming
              warmup
