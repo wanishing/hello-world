@@ -81,7 +81,7 @@
                              (reagent/dom-node this)
                              #js {:mode "clojure"
                                   :lineNumbers true})]
-      (.setSize cm 1400 (* 55 (count-newlines input)))
+      (.setSize cm 1400 (* 45 (count-newlines input)))
       (.on cm "change" #(reset! input (.getValue %))))))
 
 (defn edit-card [initial]
@@ -382,7 +382,7 @@
                                  ]))]
     (simple-slide title text)))
 
-(defn multimethod-polymorphism []
+(defn polymorphism-via-multimethod []
   (let [title "# defmulti"
         text (pretty '(defmulti handle-op (fn [data]
                                            (:op data)))
@@ -394,7 +394,7 @@
                      '(defmethod handle-op :update-metadata [{:keys [args]}]))]
     (code-slide title text)))
 
-(defn protocol-polymorphism []
+(defn polymorphism-via-protocol []
   (let [title "# defprotocol"
         text (pretty '(defprotocol Concatenatable
                         (cat [this other]))
@@ -437,12 +437,9 @@
              macro-example-2
              macro-example-3
              runtime-polymorphism
-             multimethod-polymorphism
-             protocol-polymorphism
+             polymorphism-via-multimethod
+             polymorphism-via-protocol
              questions?])
-
-
-
 
 (defn slide []
   (fn []
