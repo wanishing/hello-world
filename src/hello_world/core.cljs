@@ -117,7 +117,7 @@
   (let [title "#clojure"
         text (markdown (bullets ["modern Lisp dialect, on the JVM"
                                  "immutable persistent data structures"
-                                 "built-in support in concurrency (no locks)"
+                                 "built-in support in concurrency"
                                  "created by Rich Hickey"
                                  ]))]
     (simple-slide title text)))
@@ -249,13 +249,22 @@
     (simple-slide title text)))
 
 (defn clojure-model-2 []
-  (let [title "# clojure-model #2"
-        text (markdown (bullets ["changes to references are coordinated by the system \n * enforced \n * consistent view of the world \n * the time never stops"
+  (let [title "# clojure model #2"
+        text (markdown (bullets ["changes to references are coordinated by the system \n * enforced \n * consistent view of the world \n * the time never stops (no locks!)"
                                  "the value of a reference (state of identity) is always \n * visible \n *  shareable"
                                  "imperative way \n * direct access to mutable objects"
                                  "clojure way \n * indirect access to immutable persistent data structures"
                                  ]))]
     (simple-slide title text)))
+
+(defn clojure-mutation []
+  (let [title "# clojure mutation"
+        text (markdown (bullets ["the only mutable type is Refs"
+                                 "mutations to Refs are done within a transaction (STM)"
+                                 ]))]
+    (simple-slide title text)))
+
+
 
 (def slides [clojure
              why-clojure
@@ -270,7 +279,8 @@
              why-not-oop
              why-not-oop-2
              clojure-model
-             clojure-model-2])
+             clojure-model-2
+             clojure-mutation])
 
 (defn slide []
   (fn []
