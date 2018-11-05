@@ -81,7 +81,7 @@
                              (reagent/dom-node this)
                              #js {:mode "clojure"
                                   :lineNumbers true})]
-      (.setSize cm 1400 (* 45 (count-newlines input)))
+      (.setSize cm 1400 (* 60 (count-newlines input)))
       (.on cm "change" #(reset! input (.getValue %))))))
 
 (defn edit-card [initial]
@@ -339,8 +339,20 @@
                                  ]))]
     (simple-slide title text)))
 
+
+
 (defn macro-example []
   (let [title "# macro example"
+        text "(defmacro and
+  ([] true)
+  ([x] x)
+  ([x & next]
+   `(let [and# ~x]
+      (if and# (and ~@next) and#))))"]
+    (code-slide title text)))
+
+(defn macro-example-1 []
+  (let [title "# macro example #1"
         text "(defmacro safe [body]
   `(try ~body
         (catch Exception e#
@@ -410,7 +422,7 @@
   (let [title "# .clj"
         text (markdown (bullets ["[https://clojure.org/index](https://clojure.org/index)"
                                  "Rich Hickey on Youtube\n * Clojure Made Simple \n * The Value of Values \n * Clojure Concurrency"
-                                 "Books \n * The Joy of Clojure \n * Clojure for the Brave and True"
+                                 "Books \n * The Joy of Clojure \n * Clojure for the Brave and True \n * [Out of the Tar Pit](http://curtclifton.net/papers/MoseleyMarks06a.pdf)"
                                  "Thanks for listening!"]))]
     (simple-slide title text)))
 
@@ -435,6 +447,7 @@
              persistency-and-immutability
              the-magic-of-macros
              macro-example
+             macro-example-1
              macro-example-2
              macro-example-3
              runtime-polymorphism
