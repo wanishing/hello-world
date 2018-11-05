@@ -244,7 +244,7 @@
 
 (defn clojure-model []
   (let [title "# clojure model"
-        text (markdown (bullets ["all data structures are immutable and persistent"
+        text (markdown (bullets ["all data structures are immutable"
                                  "explicit semantics for handling state \n * via Refs and Agents"
                                  "decouples state from identity \n * identity _has_ state \n * identity can be associated with different states at different times \n * but the state _itself_ does not change "
                                  ]))]
@@ -281,11 +281,11 @@
     (code-slide title text)))
 
 (defn persistent-immutable-ds []
-  (let [title "# clojure mutation"
-        text (markdown (bullets ["the only mutable type is Refs"
-                                 "mutations are done within a transaction"
-                                 "atomic \n * every change made within a transaction occurs or none do"
-                                 "isolated \n * transaction is not effected by other transaction while running"
+  (let [title "# (), #{}, {}, []"
+        text (markdown (bullets [
+                                 "immutability \n * when change occurs, new version of the data structure is created"
+                                 "persistency \n * old version and newer version share some structure"
+                                 "structural sharing \n * maintain performance for collections operations (Big O) \n * not expensive \n * safe for threads and iteration"
                                  ]))]
     (simple-slide title text)))
 
@@ -306,7 +306,8 @@
              clojure-model
              clojure-model-2
              clojure-mutation
-             mutaion-semantics])
+             mutaion-semantics
+             persistent-immutable-ds])
 
 (defn slide []
   (fn []
