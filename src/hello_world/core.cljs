@@ -15,13 +15,13 @@
 
 (defonce app-state (atom {:current 0}))
 
-(defn next! [atom coll]
+(defn next! [ref coll]
   (let [cyclic-inc #(mod (inc %) (count coll))]
-    (swap! atom update-in [:current] cyclic-inc)))
+    (swap! ref update-in [:current] cyclic-inc)))
 
-(defn prev! [atom coll]
+(defn prev! [ref coll]
   (let [cyclic-dec #(mod (dec %) (count coll))]
-    (swap! atom update-in [:current] cyclic-dec)))
+    (swap! ref update-in [:current] cyclic-dec)))
 
 (defn set-slide! [i]
   (swap! app-state assoc :current i))
@@ -62,10 +62,12 @@
 (defn simple-slide [title body]
   (naked-slide title (with-style body "slide")))
 
-(defn pretty [s]
-  (p/with-pprint-dispatch
-    p/code-dispatch
-    (with-out-str (p/pprint s))))
+(defn pretty [& args]
+  (let [make-pretty #(p/with-pprint-dispatch
+                      p/code-dispatch
+                       (with-out-str (p/pprint %)))
+        joined (string/join "\n" (map make-pretty args))]
+    joined))
 
 ;-- Code component
 (defn count-newlines [a]
@@ -260,7 +262,30 @@
 (defn clojure-mutation []
   (let [title "# clojure mutation"
         text (markdown (bullets ["the only mutable type is Refs"
-                                 "mutations to Refs are done within a transaction (STM)"
+                                 "mutations are done within a transaction"
+                                 "atomic \n * every changppe made within a transaction occurs or none do"
+                                 "isolated \n * transaction is not effected by other transaction while running"
+                                 "must avoid side effects"
+                                 ]))]
+    (simple-slide title text)))
+
+(defn mutaion-semantics []
+  (let [title "# mutation semantics"
+        text (pretty '(defonce app-state (atom {:current 0}))
+                     '(defn next! [r coll]
+                        (let [cyclic-inc #(mod (inc %) (count coll))]
+                          (swap! r update-in [:current] cyclic-inc)))
+                     '(defn prev! [r coll]
+                        (let [cyclic-dec #(mod (dec %) (count coll))]
+                          (swap! r update-in [:current] cyclic-dec))))]
+    (code-slide title text)))
+
+(defn persistent-immutable-ds []
+  (let [title "# clojure mutation"
+        text (markdown (bullets ["the only mutable type is Refs"
+                                 "mutations are done within a transaction"
+                                 "atomic \n * every change made within a transaction occurs or none do"
+                                 "isolated \n * transaction is not effected by other transaction while running"
                                  ]))]
     (simple-slide title text)))
 
@@ -280,7 +305,8 @@
              why-not-oop-2
              clojure-model
              clojure-model-2
-             clojure-mutation])
+             clojure-mutation
+             mutaion-semantics])
 
 (defn slide []
   (fn []
