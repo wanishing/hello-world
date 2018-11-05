@@ -216,7 +216,7 @@
 
 (defn model-state-identity []
   (let [title "# Identity and State"
-        text (markdown (bullets ["Identity \n * a logical entity associated with a series of different values _over time_"
+        text (markdown (bullets ["Identity \n * a logical entity associated with a series of different values over time"
                                  "State \n *  a value associated with some identity at a point in time"
                                  ]))]
     (simple-slide title text)))
@@ -239,10 +239,17 @@
                                  ]))]
     (simple-slide title text)))
 
-(defn clojure-view []
-  (let [title "# in clojure"
-        text (markdown (bullets ["**all** data structures are immutable and persistent \n * structual sharing"
-                                 "explicit semantics for handling state via Refs and Agents"
+(defn clojure-model []
+  (let [title "# clojure model"
+        text (markdown (bullets ["all data structures are immutable and persistent"
+                                 "explicit semantics for handling state \n * via Refs and Agents"
+                                 "decouples state from identity \n * identity _has_ state \n * identity can be in different states depend on time \n * but the state _itself_ does not change "
+                                 ]))]
+    (simple-slide title text)))
+
+(defn clojure-model-2 []
+  (let [title "# clojure-model #2"
+        text (markdown (bullets ["the "
                                  ]))]
     (simple-slide title text)))
 
@@ -258,7 +265,8 @@
              model-state-identity
              why-not-oop
              why-not-oop-2
-             clojure-view])
+             clojure-model
+             clojure-model-2])
 
 (defn slide []
   (fn []
