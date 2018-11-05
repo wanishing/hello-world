@@ -116,7 +116,8 @@
 
 (defn vector-of-content []
   (let [title "# vector of content"
-        text (pretty '(def slides [vector-of-content, on-clojure
+        text (pretty '(def slides [vector-of-content
+                                   on-clojure
                                    why-clojure
                                    on-state-and-complexity
                                    why-functional
@@ -299,7 +300,7 @@
   (let [title "# the m word"
         text (markdown (bullets ["the only mutable type is Refs"
                                  "mutations are done within a transaction"
-                                 "atomic \n * every changppe made within a transaction occurs or none do"
+                                 "atomic \n * every change made within a transaction occurs or none do"
                                  "isolated \n * transaction is not effected by other transaction while running"
                                  "must avoid side effects"
                                  ]))]
