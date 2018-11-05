@@ -111,7 +111,7 @@
      slide)))
 
 ;; Slides
-(comment "macro,functional, presistent data structure immutabillity, concurrency, lisp, jvm, polymorphism")
+(comment "slide on complexity, links and resources, macro,functional, presistent data structure immutabillity, concurrency, lisp, jvm, polymorphism")
 
 (defn clojure []
   (let [title "#clojure"
@@ -236,6 +236,7 @@
                                  "no reuse"
                                  "explosion of code"
                                  "synchronization nightmare"
+                                 "power corrupts"
                                  ]))]
     (simple-slide title text)))
 
@@ -243,13 +244,16 @@
   (let [title "# clojure model"
         text (markdown (bullets ["all data structures are immutable and persistent"
                                  "explicit semantics for handling state \n * via Refs and Agents"
-                                 "decouples state from identity \n * identity _has_ state \n * identity can be in different states depend on time \n * but the state _itself_ does not change "
+                                 "decouples state from identity \n * identity _has_ state \n * identity can be associated with different states at different times \n * but the state _itself_ does not change "
                                  ]))]
     (simple-slide title text)))
 
 (defn clojure-model-2 []
   (let [title "# clojure-model #2"
-        text (markdown (bullets ["the "
+        text (markdown (bullets ["changes to references are coordinated by the system \n * enforced \n * consistent view of the world \n * the time never stops"
+                                 "the value of a reference (state of identity) is always \n * visible \n *  shareable"
+                                 "imperative way \n * direct access to mutable objects"
+                                 "clojure way \n * indirect access to immutable persistent data structures"
                                  ]))]
     (simple-slide title text)))
 
