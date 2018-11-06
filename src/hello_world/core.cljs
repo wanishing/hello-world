@@ -407,7 +407,7 @@
     (code-slide title text)))
 
 (defn polymorphism-via-protocol []
-  (let [title "# defprotocol"
+  (let [title "# defprotocol (deftype, defrecord)"
         text (pretty '(defprotocol Concatenatable
                         (cat [this other]))
 
@@ -417,6 +417,7 @@
                           (.concat this other)))
                      '(cat "House of" "Cards"))]
     (code-slide title text)))
+
 
 (defn questions? []
   (let [title "# .clj(s)"
