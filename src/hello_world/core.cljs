@@ -289,7 +289,7 @@
 
 (defn clojure-working-model-2 []
   (let [title "# clojure model #2"
-        text (markdown (bullets ["changes to references are coordinated by the system \n * enforced \n * consistent view of the world \n * the time never stops (no locks!)"
+        text (markdown (bullets ["changes to references are coordinated by the system \n * enforced \n * consistent view of the world (application level)\n * the time never stops (no locks!)"
                                  "the value of a reference (state of identity) is always \n * visible \n *  shareable"
                                  "imperative way \n * direct access to mutable objects"
                                  "clojure way \n * indirect access to immutable persistent data structures"
@@ -335,7 +335,7 @@
   (let [title "# defmacro"
         text (markdown (bullets ["macros are functions called in compile time to perform transformations of code"
                                  "clojure extends the lispy notion of code-as-data to maps and vectors"
-                                 "Use cases \n * syntacticabstraction (DSL) \n * control flow \n * reduce boilerplate \n * create binding forms (let) \n * . \n * .. \n * ... \n * the power is in your hands"
+                                 "Use cases \n * syntactic abstraction (DSL) \n * control flow \n * reduce boilerplate \n * create binding forms (let) \n * . \n * .. \n * ... \n * the power is in your hands"
                                  ]))]
     (simple-slide title text)))
 
@@ -421,7 +421,7 @@
 (defn questions? []
   (let [title "# .clj"
         text (markdown (bullets ["[https://clojure.org/index](https://clojure.org/index)"
-                                 "Rich Hickey on Youtube\n * Clojure Made Simple \n * The Value of Values \n * Clojure Concurrency"
+                                 "Rich Hickey on Youtube\n * Clojure Made Simple \n * The Value of Values \n * Clojure Concurrency \n * and all the others"
                                  "Books \n * The Joy of Clojure \n * Clojure for the Brave and True \n * [Out of the Tar Pit](http://curtclifton.net/papers/MoseleyMarks06a.pdf)"
                                  "Thanks for listening!"]))]
     (simple-slide title text)))
