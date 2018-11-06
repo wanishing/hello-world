@@ -327,7 +327,7 @@
         text (markdown (bullets [
                                  "immutability \n * when change occurs, new version of the data structure is created"
                                  "persistency \n * old version and newer version share some structure"
-                                 "structural sharing \n * maintain performance for collections operations (Big O) \n * not expensive \n * safe for threads and iteration"
+                                 "structural sharing \n * maintains performance for collections operations (Big O) \n * not expensive \n * safe for threads and iteration"
                                  ]))]
     (simple-slide title text)))
 
