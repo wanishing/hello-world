@@ -419,7 +419,7 @@
     (code-slide title text)))
 
 (defn questions? []
-  (let [title "# .clj"
+  (let [title "# .clj(s)"
         text (markdown (bullets ["[https://clojure.org/index](https://clojure.org/index)"
                                  "Rich Hickey on Youtube\n * Clojure Made Simple \n * The Value of Values \n * Clojure Concurrency \n * and all the others"
                                  "Books \n * The Joy of Clojure \n * Clojure for the Brave and True \n * [Out of the Tar Pit](http://curtclifton.net/papers/MoseleyMarks06a.pdf)"
