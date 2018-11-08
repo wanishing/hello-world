@@ -55,6 +55,20 @@
         /*background-color: #EBEBEB;*/
 }
 
+ul {
+    margin: 0;
+    padding: 0;/*
+    overflow: hidden;*/
+}
+
+li {
+    margin: 20px 40px;
+}
+
+td {
+    width: "70%";
+    hieght: "70%";
+}
 .code-slide {
     font-size: 35px;
     padding: 80px;
@@ -137,7 +151,7 @@ q {font-style: italic;}
 .eval{
     background: transparent;
     border: solid black;
-    border-width: 0 3px 3px 0;
+    border-width: 3px 3px 3px 3px;
     display: inline-block;
     padding: 8px;
     transform: rotate(-45deg);
