@@ -113,23 +113,8 @@
 ;; Slides
 (comment "macro,functional, presistent data structure immutabillity, concurrency, lisp, jvm, polymorphism")
 
-<<<<<<< HEAD
-(defn lisp1 []
-  (let [title "#clojure as Lisp - data types"
-        text (pretty '{:string "The author of Clojure is Rich Hickey"
-                       :keyword :first-release
-                       :integer 20090504
-                       :vector ["used extensively", 123, ["nested"]]
-                       :list  ("are you list?", true, false)
-                       :set {"Heed", 3.1}
-                       :function (fn [x y]
-                                   (if (<= x y)
-                                     y
-                                     x))
-                       :map {:key "value",
-                             "key" :value}})]
-    (code-slide title text)))
-=======
+
+
 (defn clojure []
   (let [title "#clojure"
         text (markdown (bullets ["modern Lisp dialect, on the JVM"
@@ -167,7 +152,7 @@
                                  "building blocks \n * functions (preferably pure) \n * (mostly) immutable data"]))]
     (simple-slide title text)))
 
->>>>>>> 490f865f027ad5e48581e115126206ee9e0e987b
+
 
 (defn warmup []
   (let [title "#(warmup)"
@@ -271,59 +256,7 @@
                                  ]))]
     (simple-slide title text)))
 
-<<<<<<< HEAD
-(defn repl
-  ([]
-   (repl "#repl" nil))
-  ([title initial]
-   (let [input (atom initial)
-         output (atom nil)
-         editor (editor-ui input initial)
-         eval-btn (fn []
-                    [:button {:class "eval"
-                              :on-click #(reset! output (eval-expr @input))}])
-         result (result-ui output)
-         columns (fn [& args]
-                   (for [[key, arg] (map-indexed vector args)]
-                     [:td {:key key}
-                      [arg]]))
-         body [:table
-               [:tbody
-                [:tr
-                 (columns editor eval-btn result)]]]]
-     (simple-slide title
-                   body))))
 
-
-
-(defn code-ui
-  ([input]
-   (code-ui input ""))
-  ([input initial]
-   (reagent/create-class
-    {:render (fn []
-               [:textarea
-                {:value initial
-                 :auto-complete "off"
-                 :class "codesnapshot"
-                 :on-change #(reset! input (.getValue %))}])
-     :component-did-mount (code-did-mount input)})))
-
-(defn debug
-  ([title]
-   (debug title nil))
-  ([title initial]
-   (let [initial (with-out-str (pprint initial))
-         input (atom initial)
-         code (code-ui input initial)
-         body [code]]
-     (simple-slide title
-                   body))))
-
-
-
-(def slides [intro, lisp, lisp1, lisp-functional, code-debug])
-=======
 (def slides [clojure
              why-clojure
              why-functional
@@ -338,7 +271,7 @@
              why-not-oop-2
              clojure-model
              clojure-model-2])
->>>>>>> 490f865f027ad5e48581e115126206ee9e0e987b
+
 
 (defn slide []
   (fn []
