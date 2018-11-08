@@ -7,67 +7,24 @@
             [cljs.js :refer [empty-state eval js-eval]]
             [goog.events :as events]
             [cljs.core.async :refer [chan dropping-buffer put! <! go]]
-            [cljs.pprint :refer [pprint]])
+            [cljs.pprint :as p])
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:import  [goog.events.EventType]))
 
 (enable-console-print!)
 
-(def css-path (str "/Users/talwanich/clojurescript/hello-world/resources/public/css/style.css"))
-
-(def styles
-  (let [slideshow-container (css [:.slideshow-container {
-                                                       :postition "relative"
-                                                       :background "#f1f1f1f1"}])
-        slide (css [:.slide { :padding "80px"
-                             :text-align "center"}])
-        next-prev (css [:.prev :.next {:cursor "pointer"
-                                       :position "absolute"
-                                       :top "50%"
-                                       :width "auto"
-                                       :margin-top "-30px"
-                                       :padding "16px"
-                                       :color "#888"
-                                       :font-weight "bold"
-                                       :font-size "20px"
-                                       :border-radius "0 3px 3px 0"
-                                       :user-select "none"}])
-        next-position (css [:.next {:position "absolute"
-                                    :right 0
-                                    :border-radius "3px 0 0 3px"}])
-        on-hover (css [:.prev:hover :.next:hover
-                       {:background-color "rgba(0,0,0,0.8)"
-                        :color "white"}])
-        dot-container (css [:.dot-container {:text-align "center"
-                                             :padding "20px"
-                                             :background "#ddd"}])
-        dot (css [:.dot {:cursor "pointer"
-                         :height "15px"
-                         :width "15px"
-                         :margin "0 2px"
-                         :background-color "#bbb"
-                         :broder-radius "50%"
-                         :display "inline-block"
-                         :transition "background-color 0.6s ease"}])
-        active-dot (css [:.active :.dot:hover {:background-color "#717171"}])
-        quote (css [:.q {:font-style "italic"}])
-        author (css [:.author {:color "cornflowerblue"}])]
-    (string/join [slideshow-container
-                  slide
-                  next-prev
-                  next-position
-                  on-hover
-                  dot-container
-                  dot
-                  active-dot
-                  quote
-                  author])))
-
-
 (defonce app-state (atom {:current 0}))
 
-(comment "macro,functional, presistent data structure immutabillity, concurrency, lisp, jvm, polymorphism")
+(defn next! [atom coll]
+  (let [cyclic-inc #(mod (inc %) (count coll))]
+    (swap! atom update-in [:current] cyclic-inc)))
 
+(defn prev! [atom coll]
+  (let [cyclic-dec #(mod (dec %) (count coll))]
+    (swap! atom update-in [:current] cyclic-dec)))
+
+(defn set-slide! [i]
+  (swap! app-state assoc :current i))
 
 (defn markdown [text]
   (->> text
@@ -81,17 +38,6 @@
       (if (empty? args)
         acc
         (recur (rest args) (string/join seperator [acc (first args)]))))))
-
-(defn markdown-code [code]
-  (let []
-    (->> code
-         (markdown))))
-
-(defn code-block [code]
-  [:pre {}
-   [:code {:class "language-clojure"
-           :data-lang "clojure"}
-    (prn-str code)]])
 
 (defn with-style [dom style]
   (let [div [:div {:class (str style)}]]
@@ -113,69 +59,18 @@
            dom-title
            body))))
 
-
-
 (defn simple-slide [title body]
   (naked-slide title (with-style body "slide")))
 
-(defn next! [atom coll]
-  (let [cyclic-inc #(mod (inc %) (count coll))]
-    (swap! atom update-in [:current] cyclic-inc)))
-
-(defn prev! [atom coll]
-  (let [cyclic-dec #(mod (dec %) (count coll))]
-    (swap! atom update-in [:current] cyclic-dec)))
-
-(defn set-slide! [i]
-  (swap! app-state assoc :current i))
-
 (defn pretty [s]
-  (with-out-str (pprint s)))
-; ------ Intro ------------
+  (p/with-pprint-dispatch
+    p/code-dispatch
+    (with-out-str (p/pprint s))))
 
-(defn intro []
-  (let [title "#clojure"
-        text (markdown (bullets ["modern Lisp dialect, on the JVM"
-                                 "immutable persistent data structures"
-                                 "built-in support concurrency (no locks)"
-                                 ]))]
-    (simple-slide title text)))
-
-;---- lisp  -----
-; macro, functional style, high order, loops, code as data, lists, Dynamic polymorphism
-
-
-(defn lisp []
-  (let [title "#clojure as Lisp"
-        text (markdown (bullets ["functional"
-                                 "code as data (as code)"
-                                 "dynamically typed"
-                                 "enables high level of abstraction"
-                                 "(almost) no syntax"
-                                 ]))]
-    (simple-slide title text)))
-
-
-
+;-- Code component
 (defn count-newlines [a]
   (reagent/track (fn []
                    (count (re-seq #"\n" @a)))))
-
-
-(defn edit-card [initial]
-  (reagent/with-let [content (atom initial)
-                     counter (count-newlines content)]
-    (.log js/console "counter " @counter)
-    [:textarea
-     {:rows (+ 100 @counter)
-      :on-change #(do
-                    (reset! content (.. % -target -value)))
-      :value initial}]))
-(comment :style {:resize "none"
-                 :width "90%"
-                 :display "block"
-                 :overflow "auto"})
-
 
 (defn code-did-mount [input]
   (fn [this]
@@ -184,16 +79,23 @@
                              (reagent/dom-node this)
                              #js {:mode "clojure"
                                   :lineNumbers true})]
-      (.setSize cm 1100 (* 50 (count-newlines input)))
+      (.setSize cm 1400 (* 55 (count-newlines input)))
       (.on cm "change" #(reset! input (.getValue %))))))
 
+(defn edit-card [initial]
+  (reagent/with-let [content (atom initial)
+                     counter (count-newlines content)]
+    [:textarea
+     {:rows (+ 102 @counter)
+      :on-change #(do
+                    (reset! content (.. % -target -value)))
+      :value initial}]))
 
 (defn code-ui [input]
   (reagent/create-class
    {:render (fn []
               [edit-card input])
     :component-did-mount (code-did-mount input)}))
-
 
 (defn code-slide
   ([title]
@@ -208,7 +110,10 @@
                      body)]
      slide)))
 
+;; Slides
+(comment "macro,functional, presistent data structure immutabillity, concurrency, lisp, jvm, polymorphism")
 
+<<<<<<< HEAD
 (defn lisp1 []
   (let [title "#clojure as Lisp - data types"
         text (pretty '{:string "The author of Clojure is Rich Hickey"
@@ -224,75 +129,149 @@
                        :map {:key "value",
                              "key" :value}})]
     (code-slide title text)))
-
-
-(defn code-debug []
-  (let [title "#clojure as Lisp - functional programming"
-        comment (str (char 59) "testcomment")
-        text (pretty comment)]
-    (code-slide title text)))
-
-
-(defn lisp-functional []
-  (let [title "#clojure as Lisp - funtional programming"
-        text (markdown (bullets ["function is value"
-                                 []
+=======
+(defn clojure []
+  (let [title "#clojure"
+        text (markdown (bullets ["modern Lisp dialect, on the JVM"
+                                 "immutable persistent data structures"
+                                 "built-in support in concurrency (no locks)"
+                                 "created by Rich Hickey"
                                  ]))]
     (simple-slide title text)))
-; ------ Examples --------
 
-(defn read [s]
-  (let [ss s]
-  (read-string ss)))
+(defn why-clojure []
+  (let [title "#why clojure?"
+        text (markdown (bullets ["functional"
+                                 "code as data (as code)"
+                                 "enables high level of abstraction"
+                                 "distinctive approuch to State, Identity and Time"
+                                 "(almost) no syntax"
+                                 ]))]
+    (simple-slide title text)))
 
+(defn why-functional []
+  (let [title "#why functional?"
+        text (markdown (bullets ["program as a chain of transformations on values"
+                                 "easier to reason about"
+                                 "easier to understand"
+                                 "less mechanical, more mathematical"
+                                 "composable \n * _Design is to take things apart in such a way that they can be put back together_ - R.H"
+                                 ]))]
+    (simple-slide title text)))
 
-(defn eval-expr [s]
-  (let [res (eval (empty-state)
-                  (read s)
-                  {:eval       js-eval
-                   :source-map true
-                   :context    :expr}
-                  identity)]
-    (println "eval-raw:  " s)
-    (println "eval: " res)
-    res))
+(defn functional-programming []
+  (let [title "#functional  programming"
+        text (markdown (bullets ["rooted in the theoretical framework of λ-calculus"
+                                 "alternative to the imperative approuch of von-Neumann architecture (OOP)"
+                                 "can simulate any stateful Turing machine"
+                                 "building blocks \n * functions (preferably pure) \n * (mostly) immutable data"]))]
+    (simple-slide title text)))
 
-(defn render-code [this]
-  (->> this reagent/dom-node (.highlightBlock js/hljs)))
+>>>>>>> 490f865f027ad5e48581e115126206ee9e0e987b
 
-(defn result-ui [output]
-  (reagent/create-class
-   {:render (fn []
-              [:div {:class "result"}
-               [:pre>code.clj
-                (if-let [output (get @output :value)]
-                  (prn-str output)
-                  "")]])
-    :component-did-mouth render-code}))
+(defn warmup []
+  (let [title "#(warmup)"
+        text (pretty '(let [a-str "Bothers and Sisters"
+                            a-keyword :first-release
+                            a-number  20090504
+                            a-vec  ["used extensively", 123, ["nested"]]
+                            a-list  ("are you list?", true, false)
+                            a-set {"Heed", 3.1}
+                            a-func (fn [x y]
+                                      (if (<= x y)
+                                        y
+                                        x))
+                            a-map {:key "value",
+                                    "key" :value}])
+                     )]
+    (code-slide title text)))
 
-(defn editor-did-mount [input]
-  (fn [this]
-    (let [cm (.fromTextArea  js/CodeMirror
-                             (reagent/dom-node this)
-                             #js {:mode "clojure"
-                                  :lineNumbers true})]
-      (.on cm "change" #(reset! input (.getValue %))))))
+(defn warmup-2 []
+  (let [title "#(warmup 2)"
+        text (pretty '(let [crts [{:type "dog" :human-friendly [100, 1000]}
+                                  {:type "cat" :human-friendly [-32, 9]}
+                                  {:type "homosapien" :human-friendly [-1000, 5.7]}]
+                            friendliness (fn [[mi ma]] (+ ma mi))
+                            cosmological-const 42
+                            friendly? (fn [crt] (<= cosmological-const
+                                                    (friendliness (:human-friendly crt))))]
+                        (->> crts
+                             (filter friendly?)
+                             (map (fn [crt] (crt :type)))))
+                     )]
+    (code-slide title text)))
 
+(defn warmup-3 []
+  (let [title "#(warmup 3)"
+        text (pretty '(((fn [f]
+                          (f f))
+                        (fn [f]
+                          (fn [v]
+                            (if (= 1 (count v))
+                              (first v)
+                              (max (first v) ((f f) (rest v)))))))
+                       [12 3 93 8 1 0 -1 2018 4.4])
+                     )]
+    (code-slide title text)))
 
-(defn editor-ui
-  ([input]
-   (editor-ui input ""))
-  ([input initial]
-   (reagent/create-class
-   {:render (fn []
-              [:textarea
-               {:value initial
-                :auto-complete "off"
-                :class "codesnapshot"
-                :on-change #(reset! input (.getValue %))}])
-    :component-did-mount (editor-did-mount input)})))
+(defn why-functional-2 []
+  (let [title "#why functional? #2"
+        text (markdown (bullets ["given a set of arguments, the program will always return exactly the same result \n * pure functions + immutable data - side-effects = referential transparency"
+                                 "testable \n * function acts locally"
+                                 "in concurrent environment - non-issue"
+                                 ]))]
+    (simple-slide title text)))
 
+(defn model-value []
+  (let [title "# Value"
+        text (markdown (bullets ["a magnitude, quantity, or number"
+                                 "observable"
+                                 "comparable"
+                                 "values aggregate to value (42, [42])"
+                                 "**never** changes"
+                                 ]))]
+    (simple-slide title text)))
 
+(defn model-state-identity []
+  (let [title "# Identity and State"
+        text (markdown (bullets ["Identity \n * a logical entity associated with a series of different values over time"
+                                 "State \n *  a value associated with some identity at a point in time"
+                                 ]))]
+    (simple-slide title text)))
+
+(defn why-not-oop []
+  (let [title "# why not OOP?"
+        text (markdown (bullets ["couples state with identity \n * an object is a pointer to a memory that contains its state"
+                                 "couples state with behavior \n * an object is also a set of methods that manipulate its state"
+                                 "couples read with write \n * impossible to observe an object without blocking others from changing it \n * _The hidden premise of imperative program: the world is stopped while you look at or change it_ - R.H"
+                                 ]))]
+    (simple-slide title text)))
+
+(defn why-not-oop-2 []
+  (let [title "# why not OOP? #2"
+        text (markdown (bullets ["most objects are just fancy maps \n * but with personal language (.getFighterId())"
+                                 "over-specified \n * new thing - new class"
+                                 "no reuse"
+                                 "explosion of code"
+                                 "synchronization nightmare"
+                                 ]))]
+    (simple-slide title text)))
+
+(defn clojure-model []
+  (let [title "# clojure model"
+        text (markdown (bullets ["all data structures are immutable and persistent"
+                                 "explicit semantics for handling state \n * via Refs and Agents"
+                                 "decouples state from identity \n * identity _has_ state \n * identity can be in different states depend on time \n * but the state _itself_ does not change "
+                                 ]))]
+    (simple-slide title text)))
+
+(defn clojure-model-2 []
+  (let [title "# clojure-model #2"
+        text (markdown (bullets ["the "
+                                 ]))]
+    (simple-slide title text)))
+
+<<<<<<< HEAD
 (defn repl
   ([]
    (repl "#repl" nil))
@@ -344,6 +323,22 @@
 
 
 (def slides [intro, lisp, lisp1, lisp-functional, code-debug])
+=======
+(def slides [clojure
+             why-clojure
+             why-functional
+             functional-programming
+             warmup
+             warmup-2
+             warmup-3
+             why-functional-2
+             model-value
+             model-state-identity
+             why-not-oop
+             why-not-oop-2
+             clojure-model
+             clojure-model-2])
+>>>>>>> 490f865f027ad5e48581e115126206ee9e0e987b
 
 (defn slide []
   (fn []
@@ -358,12 +353,13 @@
   [:div {:class "dot-container"}
    (for [i (range (count slides))]
      [:span {:class "dot"
-          :key (str i)
+             :key (str i)
              :onClick #(set-slide! i)}])]])
 
 
 (reagent/render-component [main-container]
                           (. js/document (getElementById "app")))
+;; navigation support
 
 (def keyboard-events
     (.-KEYDOWN events/EventType))
@@ -382,7 +378,6 @@
                    #(put! event-ch (extract-key %)))
     event-ch))
 
-
 (let [input (listen-to-keyboard)]
   (go-loop []
     (let [key (<! input)
@@ -392,9 +387,4 @@
             (= key left) (prev! app-state slides)))
     (recur)))
 
-(defn on-js-reload []
-
-  ;; optionally touch your app-state to force rerendering depending on
-  ;; your application
-  ;; (swap! app-state update-in [:__figwheel_counter] inc)
-  )
+(defn on-js-reload [])
