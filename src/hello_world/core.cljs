@@ -115,7 +115,7 @@
 ;; Slides
 
 (defn vector-of-content []
-  (let [titole "# vector of content"
+  (let [title "# vector of content"
         text (pretty '(def slides [on-clojure
                                    vector-of-content
                                    why-clojure
