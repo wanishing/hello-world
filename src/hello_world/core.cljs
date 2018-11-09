@@ -115,7 +115,7 @@
 ;; Slides
 
 (defn vector-of-content []
-  (let [title "# vector of content"
+  (let [titole "# vector of content"
         text (pretty '(def slides [on-clojure
                                    vector-of-content
                                    why-clojure
@@ -188,6 +188,7 @@
                                  "can simulate any stateful Turing machine"
                                  "building blocks \n * functions (preferably pure) \n * (mostly) immutable data"]))]
     (simple-slide title text)))
+
 
 
 (defn warmup []
@@ -340,7 +341,6 @@
     (simple-slide title text)))
 
 
-
 (defn macro-example []
   (let [title "# macro example"
         text "(defmacro and
@@ -455,6 +455,7 @@
              polymorphism-via-multimethod
              polymorphism-via-protocol
              questions?])
+
 
 (defn slide []
   (fn []
