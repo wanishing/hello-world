@@ -248,7 +248,7 @@
         text (markdown (bullets ["a magnitude, quantity, or number"
                                  "observable"
                                  "comparable"
-                                 "values aggregate to value (42, [42])"
+                                 "values aggregate to value (42, [42], {:a 42, :b [42ד]})"
                                  "**never** changes"
                                  ]))]
     (simple-slide title text)))
@@ -289,7 +289,7 @@
 
 (defn clojure-working-model-2 []
   (let [title "# clojure model #2"
-        text (markdown (bullets ["changes to references are coordinated by the system \n * enforced \n * consistent view of the world (application level)\n * the time never stops (no locks!)"
+        text (markdown (bullets ["changes to references are coordinated by the system \n * enforced \n * consistent view of the world \n * the time never stops (no locks!)"
                                  "the value of a reference (state of identity) is always \n * visible \n *  shareable"
                                  "imperative way \n * direct access to mutable objects"
                                  "clojure way \n * indirect access to immutable persistent data structures"
