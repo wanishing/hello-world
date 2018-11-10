@@ -133,15 +133,18 @@
                                    clojure-working-model
                                    clojure-working-model-2
                                    the-m-word
+                                   on-concurrency
+                                   killing-me-simultaneously
                                    the-semantics-of-mutation
                                    persistency-and-immutability
                                    the-magic-of-macros
                                    macro-example
+                                   macro-example-1
                                    macro-example-2
                                    macro-example-3
                                    runtime-polymorphism
-                                   multimethod-polymorphism
-                                   protocol-polymorphism
+                                   polymorphism-via-multimethod
+                                   polymorphism-via-protocol
                                    questions?]))]
     (code-slide title text)))
 
@@ -166,8 +169,7 @@
 
 (defn on-state-and-complexity []
   (let [title "# state and complexity"
-        text (markdown (bullets ["Anyone who has ever telephoned a support desk for a software system and been told to “try it again”, or “reload the document”, or “restart the program”, or “reboot your computer” or “re-install the program” or even “re- install the operating system and then the program” has direct experience of the problems that state causes for writing reliable, understandable software - _Out of the Tar Pit, Moseley and Marks_"
-                                 "computers have very large numbers of states. This makes conceiving, describing, and testing them hard. Software systems have orders-of-magnitude more states than computers do - _Brooks_"]))]
+        text (markdown "computers have very large numbers of states. This makes conceiving, describing, and testing them hard. Software systems have orders-of-magnitude more states than computers do - _Brooks_")]
     (simple-slide title text))  )
 
 (defn why-functional []
@@ -307,6 +309,33 @@
                                  ]))]
     (simple-slide title text)))
 
+(defn on-concurrency []
+  (let [title "# concurrency"
+        text (markdown (bullets ["STM supports sharing changing state between threads in a _synchronous_ and _coordinated_ manner"
+                                 "the agent system supports sharing changing state between threads in an _asynchronous_ and _independent_ manner"
+                                 "the atoms system supports sharing changing state between threads in a _synchronous_ and _independent_ manner"
+                                 ]))]
+    (simple-slide title text)))
+
+(defn killing-me-simultaneously []
+  (let [title "# killing me simultaneously"
+        text (pretty '(defn test-stm [nitems nthreads niters]
+                        (let [refs  (map ref (repeat nitems 0))
+                              pool  (Executors/newFixedThreadPool nthreads)
+                              tasks (map (fn [t]
+                                           (fn []
+                                             (dotimes [n niters]
+                                               (dosync
+                                                (doseq [r refs]
+                                                  (alter r + 1 t))))))
+                                         (range nthreads))]
+                          (doseq [future (.invokeAll pool tasks)]
+                            (.get future))
+                          (.shutdown pool)
+                          (map deref refs)))
+                     '(test-stm 10 10 10000))]
+    (code-slide title text)))
+
 (defn the-semantics-of-mutation []
   (let [title "# the semantics of mutation"
         text (pretty '(defonce app-state (atom {:current 0}))
@@ -444,6 +473,8 @@
              clojure-working-model
              clojure-working-model-2
              the-m-word
+             on-concurrency
+             killing-me-simultaneously
              the-semantics-of-mutation
              persistency-and-immutability
              the-magic-of-macros
