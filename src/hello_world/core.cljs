@@ -452,7 +452,7 @@
   (let [title "# .clj(s)"
         text (markdown (bullets ["[https://clojure.org/index](https://clojure.org/index)"
                                  "Rich Hickey on Youtube\n * Clojure Made Simple \n * The Value of Values \n * Clojure Concurrency \n * and all the others"
-                                 "Books \n * The Joy of Clojure \n * Clojure for the Brave and True \n * [Out of the Tar Pit](http://curtclifton.net/papers/MoseleyMarks06a.pdf)"
+                                 "Books \n * The Joy of Clojure \n * Clojure for the Brave and True \n * [Out of the Tar Pit](http://curtclifton.net/papers/MoseleyMarks06a.pdf) \n * [Structure and Interpretation of Computer Programs](http://web.mit.edu/alexmv/6.037/sicp.pdf)"
                                  "Thanks for listening!"]))]
     (simple-slide title text)))
 
@@ -528,10 +528,10 @@
 (let [input (listen-to-keyboard)]
   (go-loop []
     (let [key (<! input)
-          right 39
-          left 37]
-      (cond (= key right) (next! app-state slides)
-            (= key left) (prev! app-state slides)))
+          dirs {:right #{32, 39}
+                :left #{37}}]
+      (cond (contains? (:right dirs) key) (next! app-state slides)
+            (contains? (:left dirs) key) (prev! app-state slides)))
     (recur)))
 
 (defn on-js-reload [])
