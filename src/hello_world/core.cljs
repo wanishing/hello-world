@@ -241,7 +241,7 @@
 (defn why-functional-2 []
   (let [title "#why functional? #2"
         text (markdown (bullets ["given a set of arguments, the program will always return exactly the same result \n * pure functions + immutable data - side-effects = referential transparency"
-                                 "testable \n * function acts locally"
+                                 "testable \n * function acts locally \n * depends only on its input"
                                  "in concurrent environment - non-issue"
                                  ]))]
     (simple-slide title text)))
@@ -251,7 +251,7 @@
         text (markdown (bullets ["a magnitude, quantity, or number"
                                  "observable"
                                  "comparable"
-                                 "values aggregate to value (42, [42], {:a 42, :b [42ד]})"
+                                 "values aggregate to value (42, [42], {:a [42]})"
                                  "**never** changes"
                                  ]))]
     (simple-slide title text)))
@@ -302,7 +302,7 @@
 (defn the-m-word []
   (let [title "# the m word"
         text (markdown (bullets ["the only mutable type is Refs"
-                                 "mutations are done within a transaction"
+                                 "mutations are done within a transaction (STM)"
                                  "atomic \n * every change made within a transaction occurs or none do"
                                  "isolated \n * transaction is not effected by other transaction while running"
                                  "must avoid side effects"
