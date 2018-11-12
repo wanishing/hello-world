@@ -1,10 +1,7 @@
 (ns hello-world.core
   (:require [reagent.core :as reagent :refer [atom]]
             [markdown-to-hiccup.core :as m]
-            [garden.core :refer [css]]
             [clojure.string :as string]
-            [cljs.reader :refer [read-string]]
-            [cljs.js :refer [empty-state eval js-eval]]
             [goog.events :as events]
             [cljs.core.async :refer [chan dropping-buffer put! <! go]]
             [cljs.pprint :as p])
@@ -114,6 +111,15 @@
 
 ;; Slides
 
+(defn on-clojure []
+  (let [title "# clojure"
+        text (markdown (bullets ["modern Lisp dialect, on the JVM"
+                                 "immutable persistent data structures"
+                                 "built-in support in concurrency"
+                                 "created by Rich Hickey"
+                                 ]))]
+    (simple-slide title text)))
+
 (defn vector-of-content []
   (let [title "# vector of content"
         text (pretty '(def slides [on-clojure
@@ -148,14 +154,6 @@
                                    questions?]))]
     (code-slide title text)))
 
-(defn on-clojure []
-  (let [title "# clojure"
-        text (markdown (bullets ["modern Lisp dialect, on the JVM"
-                                 "immutable persistent data structures"
-                                 "built-in support in concurrency"
-                                 "created by Rich Hickey"
-                                 ]))]
-    (simple-slide title text)))
 
 (defn why-clojure []
   (let [title "#why clojure?"
@@ -190,8 +188,6 @@
                                  "can simulate any stateful Turing machine"
                                  "building blocks \n * functions (preferably pure) \n * (mostly) immutable data"]))]
     (simple-slide title text)))
-
-
 
 (defn warmup []
   (let [title "#(warmup)"
@@ -370,7 +366,6 @@
                                  ]))]
     (simple-slide title text)))
 
-
 (defn macro-example []
   (let [title "# macro example"
         text "(defmacro and
@@ -448,7 +443,6 @@
                      '(cat "House of" "Cards"))]
     (code-slide title text)))
 
-
 (defn questions? []
   (let [title "# .clj(s)"
         text (markdown (bullets ["[https://clojure.org/index](https://clojure.org/index)"
@@ -487,7 +481,6 @@
              polymorphism-via-multimethod
              polymorphism-via-protocol
              questions?])
-
 
 (defn slide []
   (fn []
