@@ -134,7 +134,7 @@
                                    clojure-working-model-2
                                    the-m-word
                                    on-concurrency
-                                   killing-me-simultaneously
+                                   killing-me-atomically
                                    the-semantics-of-mutation
                                    persistency-and-immutability
                                    the-magic-of-macros
@@ -200,7 +200,7 @@
                             a-number  20090504
                             a-vec  ["used extensively", 123, ["nested"]]
                             a-list  ("are you list?", true, false)
-                            a-set {"Heed", 3.1}
+                            a-set #{"Heed", 3.1}
                             a-func (fn [x y]
                                       (if (<= x y)
                                         y
@@ -317,8 +317,8 @@
                                  ]))]
     (simple-slide title text)))
 
-(defn killing-me-simultaneously []
-  (let [title "# killing me simultaneously"
+(defn killing-me-atomically []
+  (let [title "# killing me atomically"
         text (pretty '(defn test-stm [nitems nthreads niters]
                         (let [refs  (map ref (repeat nitems 0))
                               pool  (Executors/newFixedThreadPool nthreads)
@@ -474,7 +474,7 @@
              clojure-working-model-2
              the-m-word
              on-concurrency
-             killing-me-simultaneously
+             killing-me-atomically
              the-semantics-of-mutation
              persistency-and-immutability
              the-magic-of-macros
@@ -514,24 +514,21 @@
 (def event-source
   (.-body js/document))
 
-
-(defn extract-key [evt]
-  (.-keyCode evt))
-
 (defn listen-to-keyboard []
-  (let [event-ch (chan (dropping-buffer 1))]
+  (let [extract-key #(.-keyCode %)
+        event-ch (chan (dropping-buffer 1))]
     (events/listen event-source
                    keyboard-events
                    #(put! event-ch (extract-key %)))
     event-ch))
 
-(let [input (listen-to-keyboard)]
+(let [input (listen-to-keyboard)
+      directions {:right #{32, 39}
+                  :left #{37}}]
   (go-loop []
-    (let [key (<! input)
-          dirs {:right #{32, 39}
-                :left #{37}}]
-      (cond (contains? (:right dirs) key) (next! app-state slides)
-            (contains? (:left dirs) key) (prev! app-state slides)))
+    (let [key (<! input)]
+      (cond (contains? (:right directions) key) (next! app-state slides)
+            (contains? (:left directions) key) (prev! app-state slides)))
     (recur)))
 
 (defn on-js-reload [])
