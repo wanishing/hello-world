@@ -267,7 +267,8 @@
   (let [title "# why not OOP?"
         text (markdown (bullets ["couples state with identity \n * an object is a pointer to a memory that contains its state"
                                  "couples state with behavior \n * an object is also a set of methods that manipulate its state"
-                                 "couples read with write \n * impossible to observe an object without blocking others from changing it \n * _The hidden premise of imperative program: the world is stopped while you look at or change it_ - R.H"
+                                 "couples read with write \n * impossible to observe an object without blocking others from changing it"
+                                 " _The hidden premise of imperative program: the world is stopped while you look at or change it_ - R.H"
                                  ]))]
     (simple-slide title text)))
 
