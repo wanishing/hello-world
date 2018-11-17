@@ -160,14 +160,14 @@
         text (markdown (bullets ["functional"
                                  "code as data (as code)"
                                  "enables high level of abstraction"
-                                 "distinctive approuch to State, Identity and Time"
+                                 "distinctive approach to State, Identity and Time"
                                  "(almost) no syntax"
                                  ]))]
     (simple-slide title text)))
 
 (defn on-state-and-complexity []
   (let [title "# state and complexity"
-        text (markdown "computers have very large numbers of states. This makes conceiving, describing, and testing them hard. Software systems have orders-of-magnitude more states than computers do - _Brooks_")]
+        text (markdown "Computers have a very large number of states. This makes conceiving, describing, and testing them hard. Software systems have orders-of-magnitude more states than computers do - _Brooks_")]
     (simple-slide title text))  )
 
 (defn why-functional []
@@ -184,7 +184,7 @@
 (defn functional-programming []
   (let [title "#functional  programming"
         text (markdown (bullets ["rooted in the theoretical framework of λ-calculus"
-                                 "alternative to the imperative approuch of von-Neumann architecture (OOP)"
+                                 "alternative to the imperative approach of von-Neumann architecture"
                                  "can simulate any stateful Turing machine"
                                  "building blocks \n * functions (preferably pure) \n * (mostly) immutable data"]))]
     (simple-slide title text)))
@@ -210,12 +210,12 @@
   (let [title "#(warmup 2)"
         text (pretty '(let [crts [{:type "dog" :human-friendly [100, 1000]}
                                   {:type "cat" :human-friendly [-32, 9]}
-                                  {:type "homosapien" :human-friendly [-1000, 5.7]}]
+                                  {:type "homo sapiens" :human-friendly [-1000, 5.7]}]
                             friendliness (fn [[mi ma]] (+ ma mi))
                             cosmological-const 42
                             friendly? (fn [crt] (<= cosmological-const
                                                     (friendliness (:human-friendly crt))))]
-                        (->> crts
+                        (->> crts ; What is this ->> operator? Sequence?
                              (filter friendly?)
                              (map (fn [crt] (crt :type)))))
                      )]
@@ -247,14 +247,14 @@
         text (markdown (bullets ["a magnitude, quantity, or number"
                                  "observable"
                                  "comparable"
-                                 "values aggregate to value (42, [42], {:a [42]})"
+                                 "values aggregate to value (42, [42], {:a [42]})" ; Not sure how this example translates to the idea presented. How do the values aggregate?
                                  "**never** changes"
                                  ]))]
     (simple-slide title text)))
 
 (defn clj-state-and-identity-model []
   (let [title "# Identity and State"
-        text (markdown (bullets ["Identity \n * a logical entity associated with a series of different values over time"
+        text (markdown (bullets ["Identity \n * a logical entity associated with a series of different values over time" ; I don't understand this definition
                                  "State \n *  a value associated with some identity at a point in time"
                                  ]))]
     (simple-slide title text)))
@@ -283,7 +283,7 @@
   (let [title "# clojure working model"
         text (markdown (bullets ["all data structures are immutable"
                                  "explicit semantics for handling state \n * via Refs and Agents"
-                                 "decouples state from identity \n * identity _has_ state \n * identity can be associated with different states at different times \n * but the state _itself_ does not change "
+                                 "decouples state from identity \n * identity _has_ state \n * identity can be associated with different states at different times \n * but the state _itself_ does not change " ; Not wure what is the meaning of "identiry _has_ state"
                                  ]))]
     (simple-slide title text)))
 
@@ -301,7 +301,7 @@
         text (markdown (bullets ["the only mutable type is Refs"
                                  "mutations are done within a transaction (STM)"
                                  "atomic \n * every change made within a transaction occurs or none do"
-                                 "isolated \n * transaction is not effected by other transaction while running"
+                                 "isolated \n * A transaction is not affected by other transactions while running"
                                  "must avoid side effects"
                                  ]))]
     (simple-slide title text)))
@@ -314,7 +314,7 @@
                                  ]))]
     (simple-slide title text)))
 
-(defn killing-me-atomically []
+(defn killing-me-atomically [] ; I sure hope you plan to explain this example because I think I have an idea of what happens but not really sure that I actually do...
   (let [title "# killing me atomically"
         text (pretty '(defn test-stm [nitems nthreads niters]
                         (let [refs  (map ref (repeat nitems 0))
@@ -372,7 +372,7 @@
   ([] true)
   ([x] x)
   ([x & next]
-   `(let [and# ~x]
+   `(let [and# ~x] ; You should explain what's the meaning of #, ~ and & in the contexct of this syntax
       (if and# (and ~@next) and#))))"]
     (code-slide title text)))
 
