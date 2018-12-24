@@ -215,7 +215,7 @@
                             cosmological-const 42
                             friendly? (fn [crt] (<= cosmological-const
                                                     (friendliness (:human-friendly crt))))]
-                        (->> crts ; What is this ->> operator? Sequence?
+                        (->> crts
                              (filter friendly?)
                              (map (fn [crt] (crt :type)))))
                      )]
@@ -247,14 +247,14 @@
         text (markdown (bullets ["a magnitude, quantity, or number"
                                  "observable"
                                  "comparable"
-                                 "values aggregate to value (42, [42], {:a [42]})" ; Not sure how this example translates to the idea presented. How do the values aggregate?
+                                 "values aggregate to value (42, [42], {:a [42]})"
                                  "**never** changes"
                                  ]))]
     (simple-slide title text)))
 
 (defn clj-state-and-identity-model []
   (let [title "# Identity and State"
-        text (markdown (bullets ["Identity \n * a logical entity associated with a series of different values over time" ; I don't understand this definition
+        text (markdown (bullets ["Identity \n * a logical entity associated with a series of different values over time"
                                  "State \n *  a value associated with some identity at a point in time"
                                  ]))]
     (simple-slide title text)))
@@ -314,7 +314,7 @@
                                  ]))]
     (simple-slide title text)))
 
-(defn killing-me-atomically [] ; I sure hope you plan to explain this example because I think I have an idea of what happens but not really sure that I actually do...
+(defn killing-me-atomically []
   (let [title "# killing me atomically"
         text (pretty '(defn test-stm [nitems nthreads niters]
                         (let [refs  (map ref (repeat nitems 0))
@@ -372,7 +372,7 @@
   ([] true)
   ([x] x)
   ([x & next]
-   `(let [and# ~x] ; You should explain what's the meaning of #, ~ and & in the contexct of this syntax
+   `(let [and# ~x]
       (if and# (and ~@next) and#))))"]
     (code-slide title text)))
 
